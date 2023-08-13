@@ -9,6 +9,7 @@ let usersData = [];
 let isAdminPanelOpen = false;
 let adminCredentials = []; // Данные для аутентификации администратора
 let actionHistory = [];
+let timesession = {};
 
 app.set('trust proxy', 1);
 
@@ -151,6 +152,7 @@ app.post('/login', (req, res) => {
     req.session.adminSessionKey = sessionKey;
     req.session.adminUsername = adminUsername; // Store the admin username in the session
     console.log('login adminUsername:', adminUsername,'req.session.adminUsername:', req.session.adminUsername);
+    timesession = req.session.adminUsername;
     isAdminPanelOpen = true;
     readDataFromFile();
     res.redirect('/admin');
@@ -163,6 +165,7 @@ app.post('/login', (req, res) => {
 // Admin panel page displaying all users
 app.get('/admin', (req, res) => {
   if (isAdminPanelOpen) {
+    req.session.adminUsername = timesession;
     res.render('admin-panel.ejs', { users: usersData, adminUsername: req.session.adminUsername });
     console.log('admin req.session.adminUsername:', req.session.adminUsername);
   } else {
