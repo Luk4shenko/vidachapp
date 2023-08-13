@@ -350,7 +350,7 @@ function requireAuth(req, res, next) {
   if (
     req.session.adminUsername &&
     req.session.adminSessionKey &&
-    req.session.adminSessionKey === generateUniqueSessionKey(req.session.adminUsername, req.ip) &&
+    req.session.adminSessionKey === generateUniqueSessionKey(req.session.adminUsername) && // Убрать параметр ipAddress
     isAdminPanelOpen
   ) {
     // User is authenticated and admin panel is open, proceed
@@ -362,10 +362,10 @@ function requireAuth(req, res, next) {
 }
 
 // Функция для генерации уникального сессионного ключа
-function generateUniqueSessionKey(username, ipAddress) {
+function generateUniqueSessionKey(username) {
   // Здесь вы можете использовать любой способ для генерации уникального ключа,
-  // например, комбинировать имя администратора, IP-адрес и случайное значение
-  return `${username}_${ipAddress}_${Math.random()}`;
+  // например, комбинировать имя администратора и случайное значение
+  return `${username}_${Math.random()}`;
 }
 
 // Start the server
