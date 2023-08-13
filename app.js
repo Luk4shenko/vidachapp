@@ -18,7 +18,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: 'your-secret-key',
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  proxy: true // Установите этот параметр в true
 }));
 app.use(express.static(path.join(__dirname, 'images')));
 
