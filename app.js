@@ -22,11 +22,6 @@ app.use(session({
   proxy: true // Установите этот параметр в true
 }));
 app.use(express.static(path.join(__dirname, 'images')));
-// Middleware for getting the client IP address from the reverse proxy header
-app.use((req, res, next) => {
-  req.ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  next();
-});
 
 // Read initial data from JSON files
 function initializeData() {
@@ -150,7 +145,7 @@ app.post('/login', (req, res) => {
     console.log('login adminUsername:', adminUsername,'req.session.adminUsername:', req.session.adminUsername);
 
     // Генерируем уникальный сессионный ключ
-    const sessionKey = generateUniqueSessionKey(adminUsername, req.ip);
+    const sessionKey = generateUniqueSessionKey(adminUsername);
     
     // Сохраняем сессионный ключ в сессии
     req.session.adminSessionKey = sessionKey;
@@ -355,7 +350,7 @@ function requireAuth(req, res, next) {
   if (
     req.session.adminUsername &&
     req.session.adminSessionKey &&
-    req.session.adminSessionKey === generateUniqueSessionKey(req.session.adminUsername, req.ip) &&
+    req.session.adminSessionKey === generateUniqueSessionKey(req.session.adminUsername) &&
     isAdminPanelOpen
   ) {
     // User is authenticated and admin panel is open, proceed
@@ -367,10 +362,10 @@ function requireAuth(req, res, next) {
 }
 
 // Функция для генерации уникального сессионного ключа
-function generateUniqueSessionKey(username, ipAddress) {
+function generateUniqueSessionKey(username) {
   // Здесь вы можете использовать любой способ для генерации уникального ключа,
-  // например, комбинировать имя администратора, IP-адрес и случайное значение
-  return `${username}_${ipAddress}_${Math.random()}`;
+  // например, комбинировать имя администратора
+  return `${username}`;
 }
 
 // Start the server
