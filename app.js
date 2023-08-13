@@ -1,5 +1,6 @@
 const express = require('express');
 const session = require('express-session');
+const cookieParser = require('cookie-parser');
 const fs = require('fs');
 const path = require('path');
 const app = express();
@@ -14,6 +15,7 @@ app.set('trust proxy', 1);
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: 'your-secret-key',
