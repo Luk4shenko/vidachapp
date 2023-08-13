@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Административная панель</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    /* Styles for the rest of the code remain the same */
+    /* Стиль для заголовка */
+    h1 {
+      font-family: Calibri, Arial, sans-serif;
+      font-size: 36px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #0c0b0b;
+    }
+
+    /* Styles for the buttons */
+    .admin-btn,
+    .search-form button {
+      background-color: #005db9;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .admin-btn-container {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .admin-btn-block {
+      width: 100%;
+    }
+
+    .admin-btn:hover,
+    .search-form button:hover {
+      background-color: #003e81;
+    }
+
+    /* Styles for the container */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Styles for the form elements */
+    .search-form {
+      margin-bottom: 20px;
+    }
+
+    .search-form .form-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-form label {
+      font-weight: bold;
+    }
+
+    .search-form input[type="text"] {
+      width: 200px;
+      padding: 5px;
+    }
+
+    /* Styles for the table */
+    #dataTable {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    #dataTable th,
+    #dataTable td {
+      border: 1px solid #ddd;
+      padding: 10px;
+    }
+
+    #dataTable th {
+      background-color: #f2f2f2;
+      text-align: center;
+    }
+
+    .even {
+      background-color: #f2f2f2;
+    }
+
+    /* Styles for the checkbox */
+    input[type="checkbox"] {
+      margin-right: 5px;
+    }
+
+    /* Style for the footer image */
+    .footer-image {
+      max-width: 100%;
+      height: auto;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Административная панель</h1>
+    <!-- Form to return to the user form -->
+    <div class="admin-btn-container">
+      <form action="/return" method="post">
+        <button type="submit" class="admin-btn admin-btn-block">Выйти</button>
+      </form>
+    </div>
+    <div class="admin-btn-container">
+      <form action="/action-history" method="get">
+        <button type="submit" class="admin-btn admin-btn-block">История действий</button>
+      </form>
+    </div>
+    <!-- Search form for filtering data in the table -->
+    <form class="search-form">
+      <div class="form-group">
+        <label for="searchTerm">Поиск:</label>
+        <input type="text" name="searchTerm" id="searchTerm" placeholder="Введите ключевое слово" autocomplete="off">
+        <button type="button" onclick="searchTable()">Найти</button>
+        <button type="button" onclick="resetTable()">Сбросить</button>
+      </div>
+    </form>
+
+    <div class="admin-panel">
+      <table id="dataTable">
+        <tr>
+          <th>Фамилия</th>
+          <th>Имя</th>
+          <th>Дата выдачи</th>
+          <th>Выдал</th>
+          <th>Дата сдачи</th>
+          <th>Наименование оборудования</th>
+          <th>Действие</th>
+        </tr>
+        <% for (let i = 0; i < users.length; i++) { %>
+          <tr class="<%= i % 2 === 0 ? 'even' : 'odd' %>">
+            <td><%= users[i].lastName %></td>
+            <td><%= users[i].firstName %></td>
+            <td><%= users[i].birthDate %></td>
+            <td><%= users[i].adminpost %></td>
+            <td><%= users[i].returnedDate %></td>
+            <td><%= users[i].equipment %></td>
+            <td>
+              <% if (users[i].status === "На подтверждении") { %>
+                <form action="/return/<%= i %>" method="post">
+                  <label>
+                    <input type="checkbox" name="returned" onChange="this.form.submit()">
+                    Подтвердить возврат
+                  </label>
+                </form>
+              <% } else { %>
+                <button onclick="alert('Оборудование еще не возвращено')">Ожидание</button>
+              <% } %>
+            </td>
+          </tr>
+        <% } %>
+      </table>
+      <img src="/images/footer-image.jpg" alt="Footer Image" class="footer-image">
+    </div>
+  </div>
+
+  <script>
+    // JavaScript function to filter the table based on the search term
+    function searchTable() {
+      const searchTerm = document.getElementById("searchTerm").value.toLowerCase();
+      const table = document.getElementById("dataTable");
+      const rows = table.getElementsByTagName("tr");
+
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        const rowData = row.innerText.toLowerCase();
+
+        if (rowData.includes(searchTerm)) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
+      }
+    }
+
+    // JavaScript function to reset the table and show all rows
+    function resetTable() {
+      const table = document.getElementById("dataTable");
+      const rows = table.getElementsByTagName("tr");
+
+      for (let i = 1; i < rows.length; i++) {
+        rows[i].style.display = "";
+      }
+    }
+  </script>
+</body>
+</html>

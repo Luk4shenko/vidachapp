@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>История действий</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    /* Custom styles for the page */
+    body {
+      font-family: Calibri, Arial, sans-serif;
+      background-color: #f7f7f7;
+    }
+
+    /* Style for the footer image */
+    .footer-image {
+      max-width: 100%;
+      height: auto;
+      margin-top: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      font-size: 36px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #0c0b0b;
+    }
+
+    .main-btn {
+      display: block;
+      margin-bottom: 20px;
+      background-color: #005db9;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .main-btn:hover {
+      background-color: #003e81;
+    }
+
+    /* Rest of the existing styles remain unchanged */
+    .search-form {
+      margin-bottom: 20px;
+      display: flex; /* Use flexbox */
+      align-items: center; /* Center vertically within the flex container */
+    }
+
+    .search-form label {
+      font-weight: bold;
+    }
+
+    .search-form input[type="text"] {
+      width: 200px;
+      padding: 5px;
+    }
+
+    .search-form button {
+      padding: 5px 10px;
+      background-color: #005db9;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: 10px; /* Add margin between elements */
+    }
+
+    .search-form button:hover {
+      background-color: #003e81;
+    }
+
+    #downloadButton {
+      padding: 5px 10px;
+      background-color: #005db9;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: auto;
+      display: block;
+    }
+
+    #downloadButton:hover {
+      background-color: #003e81;
+    }
+
+    .history-panel {
+      margin-top: 20px;
+    }
+
+    #dataTable {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    #dataTable th,
+    #dataTable td {
+      border: 1px solid #ddd;
+      padding: 10px;
+    }
+
+    #dataTable th {
+      background-color: #f2f2f2;
+      text-align: center;
+    }
+
+    .even {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>История действий</h1>
+    <a href="/admin" class="main-btn">Вернуться в Административную панель</a>
+    <div class="search-form">
+      <label for="searchTerm">Поиск:</label>
+      <input type="text" name="searchTerm" id="searchTerm" placeholder="Введите фамилию" autocomplete="off">
+      <button type="button" onclick="searchTable()">Поиск</button>
+      <button type="button" onclick="resetTable()">Сброс</button>
+      <button class="btn btn-primary" id="downloadButton">Скачать таблицу в формате .CSV</button>
+    </div>
+    <div class="history-panel">
+      <table id="dataTable">
+        <tr>
+          <th>Фамилия</th>
+          <th>Имя</th>
+          <th>Дата выдачи</th>
+          <th>Выдал</th>
+          <th>Дата и время сдачи</th>
+          <th>Наименование оборудования</th>
+          <th>Подтвердил</th>
+          <th>Дата удаления</th>
+        </tr>
+        <% for (let i = 0; i < history.length; i++) { %>
+          <tr class="<%= i % 2 === 0 ? 'even' : 'odd' %>">
+            <td><%= history[i].lastName %></td>
+            <td><%= history[i].firstName %></td>
+            <td><%= history[i].birthDate %></td>
+            <td><%= history[i].adminpost %></td>
+            <td><%= history[i].returnedDate %></td>
+            <td><%= history[i].equipment %></td>
+            <td><%= history[i].admin %></td>
+            <td><%= history[i].deleteDate %></td>
+          </tr>
+        <% } %>
+      </table>
+      <img src="/images/footer-image.jpg" alt="Footer Image" class="footer-image">
+    </div>
+  </div>
+
+  <script>
+    // JavaScript function to filter the table based on the search term
+    function searchTable() {
+      const searchTerm = document.getElementById("searchTerm").value.toLowerCase();
+      const table = document.getElementById("dataTable");
+      const rows = table.getElementsByTagName("tr");
+
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        const rowData = row.innerText.toLowerCase();
+
+        if (rowData.includes(searchTerm)) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
+      }
+    }
+
+    // JavaScript function to reset the table and show all rows
+    function resetTable() {
+      const table = document.getElementById("dataTable");
+      const rows = table.getElementsByTagName("tr");
+
+      for (let i = 1; i < rows.length; i++) {
+        rows[i].style.display = "";
+      }
+    }
+    document.getElementById('downloadButton').addEventListener('click', () => {
+      const rows = document.querySelectorAll('table tr');
+      let csvContent = "data:text/csv;charset=utf-8,";
+      rows.forEach(row => {
+        const rowData = [];
+        row.querySelectorAll('td, th').forEach(cell => {
+          rowData.push(cell.innerText.replace(/,/g, '')); // Заменяем запятые в ячейках, чтобы не нарушить CSV-формат
+        });
+        csvContent += rowData.join(',') + "\n";
+      });
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      saveAs(blob, "action-history.csv");
+    });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</body>
+</html>

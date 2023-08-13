@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Возврат оборудования</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    /* Стили для заголовка */
+    h1 {
+      font-family: Calibri, Arial, sans-serif;
+      font-size: 36px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #0c0b0b;
+    }
+
+    /* Style for the footer image */
+    .footer-image {
+      max-width: 100%;
+      height: auto;
+      margin-top: 20px;
+    }
+
+    /* Стили для контейнера */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Стили для главной кнопки */
+    .main-btn {
+      display: block;
+      text-align: center;
+      margin-top: 10px;
+      width: 100%;
+      height: 50px; /* Устанавливаем высоту кнопки */
+      line-height: 30px; /* Центрируем текст по вертикали */
+      background-color: #005db9;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .main-btn:hover {
+      background-color: #003e81;
+    }
+
+    /* Стили для поисковой формы */
+    .search-form {
+      margin-bottom: 20px;
+      margin-top: 10px;
+    }
+
+    .search-form .form-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-form label {
+      font-weight: bold;
+    }
+
+    .search-form input[type="text"] {
+      width: 400px;
+      padding: 5px;
+    }
+
+    .search-form button {
+      padding: 5px 10px;
+      background-color: #005db9;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .search-form button:hover {
+      background-color: #003e81;
+    }
+
+    /* Стили для таблицы */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 8px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .even {
+      background-color: #f2f2f2;
+    }
+
+    .odd {
+      background-color: #ffffff;
+    }
+
+    /* Стили для кнопки "Оборудование вернул(-а)" в таблице */
+    .return-btn {
+      padding: 5px 10px;
+      background-color: #005db9;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .return-btn:hover {
+      background-color: #003e81;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Возврат оборудования</h1>
+    <!-- Search form for filtering data in the table -->
+    <form class="search-form">
+      <div class="form-group">
+        <label for="searchTerm">Поиск:</label>
+        <input type="text" name="searchTerm" id="searchTerm" placeholder="Введите фамилию" autocomplete="off">
+        <button type="button" onclick="searchTable()" class="btn btn-primary">Поиск</button>
+        <button type="button" onclick="resetTable()" class="btn btn-primary">Сброс</button>
+      </div>
+    </form>
+
+    <div class="return-panel">
+      <table id="dataTable">
+        <tr>
+          <th>Фамилия</th>
+          <th>Имя</th>
+          <th>Дата выдачи</th>
+          <th>Наименование оборудования</th>
+          <th>Выдал</th>
+          <th>Дата и время сдачи</th>
+          <th>Действие</th>
+        </tr>
+        <% for (let i = 0; i < users.length; i++) { %>
+          <tr class="data-row <%= i % 2 === 0 ? 'even' : 'odd' %>">
+            <td><%= users[i].lastName %></td>
+            <td><%= users[i].firstName %></td>
+            <td><%= users[i].birthDate %></td>
+            <td><%= users[i].equipment %></td>
+            <td><%= users[i].adminpost %></td>
+            <td><%= users[i].returnedDate %></td>
+            <td>
+              <% if (users[i].status === "Выдано") { %>
+                <form action="/return-equipment/<%= i %>" method="post" onsubmit="returnEquipment(event)">
+                  <button type="submit" class="btn btn-primary return-btn">Сдать оборудование</button>
+                </form>
+              <% } else if (users[i].status === "На подтверждении") { %>
+                <span>На подтверждении</span>
+              <% } %>
+            </td>
+          </tr>
+        <% } %>
+      </table>
+      <a href="/" class="btn btn-primary main-btn">На главную</a>
+      <img src="/images/footer-image.jpg" alt="Footer Image" class="footer-image">
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Скрытие всех строк таблицы при загрузке страницы
+      const rows = document.querySelectorAll(".data-row");
+      for (let i = 0; i < rows.length; i++) {
+        rows[i].style.display = "none";
+      }
+    });
+
+    function searchTable() {
+      const searchTerm = document.getElementById("searchTerm").value.toLowerCase();
+      const rows = document.querySelectorAll(".data-row");
+
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const rowData = row.innerText.toLowerCase();
+
+        if (rowData.includes(searchTerm)) {
+          row.style.display = ""; // Отображение строки, если есть совпадение
+        } else {
+          row.style.display = "none"; // Скрытие строки, если нет совпадения
+        }
+      }
+    }
+
+    function resetTable() {
+      const table = document.getElementById("dataTable");
+      const rows = table.querySelectorAll(".data-row");
+
+      for (let i = 0; i < rows.length; i++) {
+        rows[i].style.display = "none"; // Скрытие всех строк при сбросе
+      }
+    }
+
+    function returnEquipment(event) {
+      event.preventDefault(); // Предотвращаем стандартное поведение отправки формы
+
+      const form = event.target; // Получаем ссылку на форму
+      const formData = new FormData(form); // Создаем объект FormData
+
+      // Выполняем AJAX-запрос для отправки данных формы на сервер
+      fetch(form.action, {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (response.ok) {
+          // Если успешно, перенаправляем на главную страницу
+          window.location.href = '/';
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }
+  </script>
+</body>
+</html>

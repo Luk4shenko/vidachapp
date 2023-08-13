@@ -1,0 +1,44 @@
+[
+  {
+    "lastName": "Рудомазинс",
+    "firstName": "Ирина",
+    "birthDate": "08.08.2023",
+    "equipment": [
+      "Гарнитура",
+      ""
+    ],
+    "adminpost": [
+      "Русаков",
+      ""
+    ],
+    "status": "Выдано"
+  },
+  {
+    "lastName": "Хмелькова",
+    "firstName": "Екатерина",
+    "birthDate": "10.08.2023",
+    "equipment": [
+      "Зарядка Lenovo",
+      ""
+    ],
+    "adminpost": [
+      "Иванов",
+      ""
+    ],
+    "status": "Выдано"
+  },
+  {
+    "lastName": "Федосеева",
+    "firstName": "Ольга ",
+    "birthDate": "11.08.2023",
+    "equipment": [
+      "Мышь проводная",
+      ""
+    ],
+    "adminpost": [
+      "Иванов",
+      ""
+    ],
+    "status": "Выдано"
+  }
+]
