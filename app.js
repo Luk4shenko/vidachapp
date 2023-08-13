@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: 'your-secret-key',
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: false
 }));
 app.use(express.static(path.join(__dirname, 'images')));
 
