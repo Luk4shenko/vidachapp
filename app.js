@@ -241,7 +241,7 @@ app.post('/return/:index', (req, res) => {
     readActionHistory();
     console.log('return req.session.adminUsername:', req.session.adminUsername);
 
-    const admin = req.session.adminUsername || 'Unknown'; // Use req.session.adminUsername here
+    const admin = timesession || 'Unknown'; // Use req.session.adminUsername here
     const deleteDate = new Date().toLocaleString('ru-RU'); // Форматирование даты как "дд.мм.гггг, чч:мм"
     actionHistory.push({
       ...user,
