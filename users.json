@@ -14,20 +14,6 @@
     "status": "Выдано"
   },
   {
-    "lastName": "Ермилов",
-    "firstName": "Андрей",
-    "birthDate": "23.08.2023",
-    "equipment": [
-      "Кликер",
-      ""
-    ],
-    "adminpost": [
-      "Другой",
-      "Лукашенко"
-    ],
-    "status": "Выдано"
-  },
-  {
     "lastName": "Явич",
     "firstName": "Алина",
     "birthDate": "29.08.2023",
@@ -117,6 +103,108 @@
     "birthDate": "20.09.2023",
     "equipment": [
       "Мышь проводная",
+      ""
+    ],
+    "adminpost": [
+      "Иванов",
+      ""
+    ],
+    "status": "Выдано"
+  },
+  {
+    "firstName": "Артём",
+    "birthDate": "16.10.2023",
+    "equipment": [
+      "Зарядка Lenovo",
+      ""
+    ],
+    "adminpost": [
+      "Иванов",
+      ""
+    ],
+    "status": "Выдано"
+  },
+  {
+    "firstName": "Артём",
+    "birthDate": "16.10.2023",
+    "equipment": [
+      "Мышь проводная",
+      ""
+    ],
+    "adminpost": [
+      "Клентеев",
+      ""
+    ],
+    "status": "Выдано"
+  },
+  {
+    "firstName": "Артём",
+    "birthDate": "16.10.2023",
+    "equipment": [
+      "Мышь проводная",
+      ""
+    ],
+    "adminpost": [
+      "Иванов",
+      ""
+    ],
+    "status": "Выдано"
+  },
+  {
+    "firstName": "Артём",
+    "birthDate": "16.10.2023",
+    "equipment": [
+      "Зарядка Lenovo",
+      ""
+    ],
+    "adminpost": [
+      "Иванов",
+      ""
+    ],
+    "status": "Выдано"
+  },
+  {
+    "firstName": "Артём",
+    "birthDate": "16.10.2023",
+    "equipment": [
+      "Мышь проводная",
+      ""
+    ],
+    "adminpost": [
+      "Айнетдинов",
+      ""
+    ],
+    "status": "Выдано"
+  },
+  {
+    "firstName": "Артём",
+    "birthDate": "16.10.2023",
+    "equipment": [
+      "Мышь беспроводная",
+      ""
+    ],
+    "adminpost": "Клентеев",
+    "status": "Выдано"
+  },
+  {
+    "firstName": "Артём",
+    "birthDate": "16.10.2023",
+    "equipment": [
+      "Зарядка HP",
+      ""
+    ],
+    "adminpost": [
+      "Иванов",
+      ""
+    ],
+    "status": "Выдано"
+  },
+  {
+    "lastName": "Лукашенко",
+    "firstName": "Артём",
+    "birthDate": "16.10.2023",
+    "equipment": [
+      "Зарядка Lenovo",
       ""
     ],
     "adminpost": [

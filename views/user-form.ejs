@@ -121,7 +121,7 @@
       <form action="/submit" method="post">     
         <div class="form-group">
           <label for="lastName">Фамилия:</label>
-          <input type="text" id="lastName" class="form-control" autocomplete="off" required>
+          <input type="text" id="lastName" name="lastName" class="form-control" autocomplete="off" required>
           <ul class="suggestions-list"></ul>
         </div>
 
@@ -237,7 +237,10 @@ const suggestionsList = document.querySelector('.suggestions-list');
 // Функция, выполняющая поиск и предложение вариантов
 async function suggestEmployee() {
   const searchTerm = lastNameInput.value.trim().toLowerCase();
-  
+
+  // Очищаем предыдущие варианты выбора
+  suggestionsList.innerHTML = '';
+
   try {
     // Загрузка данных из JSON-файла с помощью Fetch API
     const response = await fetch('/employee.json');
@@ -247,9 +250,6 @@ async function suggestEmployee() {
       const fullName = `${employee.secondname} ${employee.name} ${employee.thirdname}`.toLowerCase();
       return fullName.includes(searchTerm);
     });
-
-    // Очищаем предыдущие варианты выбора
-    suggestionsList.innerHTML = '';
 
     // Добавляем варианты выбора
     suggestions.forEach((employee) => {
@@ -278,9 +278,8 @@ async function suggestEmployee() {
 
 // Слушаем события ввода для автозаполнения
 lastNameInput.addEventListener('input', suggestEmployee);
-  // Скрываем выпадающий список при потере фокуса
-  suggestionsList.style.display = 'none';
-  // Добавляем обработчик события blur для поля "Фамилия"
+
+// Добавляем обработчик события blur для поля "Фамилия"
 lastNameInput.addEventListener('blur', () => {
   // Задерживаем скрытие списка с помощью setTimeout, чтобы дать пользователю возможность выбрать вариант из списка
   setTimeout(() => {
