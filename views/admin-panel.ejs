@@ -4,44 +4,14 @@
   <title>Административная панель</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
-    /* Styles for the rest of the code remain the same */
-    /* Стиль для заголовка */
-    h1 {
-      font-family: Calibri, Arial, sans-serif;
-      font-size: 36px;
-      font-weight: bold;
+    /* Common styles for the page */
+    body {
+      font-family: 'Calibri', Arial, sans-serif;
+      background-color: #f7f7f7;
       text-align: center;
-      margin-bottom: 20px;
-      color: #0c0b0b;
     }
 
-    /* Styles for the buttons */
-    .admin-btn,
-    .search-form button {
-      background-color: #005db9;
-      color: #fff;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-right: 10px;
-    }
-
-    .admin-btn-container {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    .admin-btn-block {
-      width: 100%;
-    }
-
-    .admin-btn:hover,
-    .search-form button:hover {
-      background-color: #003e81;
-    }
-
-    /* Styles for the container */
+    /* Style for the container */
     .container {
       max-width: 1000px;
       margin: 0 auto;
@@ -50,29 +20,79 @@
       border: 1px solid #ddd;
       border-radius: 4px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      text-align: center;
     }
 
-    /* Styles for the form elements */
-    .search-form {
+    /* Style for the header */
+    h1 {
+      font-size: 36px;
+      font-weight: bold;
       margin-bottom: 20px;
+      color: #0c0b0b;
     }
 
-    .search-form .form-group {
+    /* Style for buttons */
+    .admin-btn {
+      background-color: #005db9;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 6px;
+      width: 100%;
+      transition: all 0.3s;
+    }
+
+    .admin-btn-horizontal {
+      display: inline-block;
+    }
+
+    .admin-btn:hover {
+      background-color: #003e81;
+      transform: scale(1.05);
+      box-shadow: 0 0 5px 0 #003e81;
+    }
+
+    /* Style for the search form and reset button */
+    .search-form {
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: center;
+      margin: 20px 0;
     }
 
     .search-form label {
       font-weight: bold;
+      margin-right: 10px;
     }
 
     .search-form input[type="text"] {
       width: 200px;
       padding: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-right: 6px;
     }
 
-    /* Styles for the table */
+    .search-form button {
+      padding: 5px 10px;
+      background-color: #005db9;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: all 0.3s;
+    }
+
+    .search-form button:hover {
+      background-color: #003e81;
+      transform: scale(1.05);
+      box-shadow: 0 0 5px 0 #003e81;
+    }
+
+    /* Style for the table */
     #dataTable {
       width: 100%;
       border-collapse: collapse;
@@ -88,15 +108,51 @@
     #dataTable th {
       background-color: #f2f2f2;
       text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 2;
     }
 
     .even {
       background-color: #f2f2f2;
     }
 
-    /* Styles for the checkbox */
-    input[type="checkbox"] {
-      margin-right: 5px;
+    /* Style for the "Подтвердить выдачу" button */
+    .confirm-btn {
+      background-color: #ff3333;
+      color: #fff;
+      padding: 5px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 6px;
+      min-width: 160px;
+      transition: all 0.3s;
+    }
+
+    .confirm-btn:hover {
+      background-color: #cc0000;
+      transform: scale(1.05);
+      box-shadow: 0 0 5px 0 #cc0000;
+    }
+
+    /* Style for the "Скачать таблицу в Excel" button */
+    #downloadExcelButton {
+      padding: 10px;
+      background-color: #005db9;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 6px;
+      min-width: 160px;
+      transition: all 0.3s;
+    }
+
+    #downloadExcelButton:hover {
+      background-color: #003e81;
+      transform: scale(1.05);
+      box-shadow: 0 0 5px 0 #003e81;
     }
 
     /* Style for the footer image */
@@ -110,64 +166,58 @@
 <body>
   <div class="container">
     <h1>Административная панель</h1>
-    <!-- Form to return to the user form -->
     <div class="admin-btn-container">
       <form action="/return" method="post">
-        <button type="submit" class="admin-btn admin-btn-block">Выйти</button>
+        <button type="submit" class="admin-btn admin-btn-horizontal">Вернуться на главную</button>
       </form>
-    </div>
-    <div class="admin-btn-container">
       <form action="/action-history" method="get">
-        <button type="submit" class="admin-btn admin-btn-block">История действий</button>
+        <button type="submit" class="admin-btn admin-btn-horizontal">История действий</button>
       </form>
+      <button onclick="downloadExcel()" id="downloadExcelButton" class="admin-btn admin-btn-horizontal">Скачать таблицу в Excel</button>
     </div>
-    <!-- Search form for filtering data in the table -->
-    <form class="search-form">
-      <div class="form-group">
-        <label for="searchTerm">Поиск:</label>
-        <input type="text" name="searchTerm" id="searchTerm" placeholder="Введите ключевое слово" autocomplete="off">
-        <button type="button" onclick="searchTable()">Найти</button>
-        <button type="button" onclick="resetTable()">Сбросить</button>
-      </div>
-    </form>
-
-    <div class="admin-panel">
-      <table id="dataTable">
-        <tr>
-          <th>Фамилия</th>
-          <th>Имя</th>
-          <th>Дата выдачи</th>
-          <th>Выдал</th>
-          <th>Дата сдачи</th>
-          <th>Наименование оборудования</th>
-          <th>Действие</th>
+    <div class="search-form">
+      <label for="searchTerm">Поиск:</label>
+      <input type="text" name="searchTerm" id="searchTerm" placeholder="Введите ключевое слово" autocomplete="off">
+      <button type="submit" onclick="searchTable();">Искать</button>
+      <button id="resetButton" onclick="resetTable()">Сбросить</button>
+    </div>
+    <table id="dataTable">
+      <tr>
+        <th>Фамилия</th>
+        <th>Имя</th>
+        <th>Дата выдачи</th>
+        <th>Выдал</th>
+        <th>Дата сдачи</th>
+        <th>Наименование оборудования</th>
+        <th>Действие</th>
+      </tr>
+      <!-- Loop to display data -->
+      <% for (let i = 0; i < users.length; i++) { %>
+        <tr class="<%= i % 2 === 0 ? 'even' : 'odd' %>">
+          <td><%= users[i].lastName %></td>
+          <td><%= users[i].firstName %></td>
+          <td><%= users[i].birthDate %></td>
+          <td><%= users[i].adminpost %></td>
+          <td><%= users[i].returnedDate %></td>
+          <td><%= users[i].equipment %></td>
+          <td>
+            <!-- Check the status for action -->
+            <% if (users[i].status === "На подтверждении") { %>
+              <form action="/return/<%= i %>" method="post">
+                <button class="confirm-btn">Подтвердить выдачу</button>
+              </form>
+            <% } else { %>
+              <p>Оборудование еще не возвращено</p>
+            <% } %>
+          </td>
         </tr>
-        <% for (let i = 0; i < users.length; i++) { %>
-          <tr class="<%= i % 2 === 0 ? 'even' : 'odd' %>">
-            <td><%= users[i].lastName %></td>
-            <td><%= users[i].firstName %></td>
-            <td><%= users[i].birthDate %></td>
-            <td><%= users[i].adminpost %></td>
-            <td><%= users[i].returnedDate %></td>
-            <td><%= users[i].equipment %></td>
-            <td>
-              <% if (users[i].status === "На подтверждении") { %>
-                <form action="/return/<%= i %>" method="post">
-                  <label>
-                    <input type="checkbox" name="returned" onChange="this.form.submit()">
-                    Подтвердить возврат
-                  </label>
-                </form>
-              <% } else { %>
-                <button onclick="alert('Оборудование еще не возвращено')">Ожидание</button>
-              <% } %>
-            </td>
-          </tr>
-        <% } %>
-      </table>
-      <img src="/images/footer-image.jpg" alt="Footer Image" class="footer-image">
-    </div>
+      <% } %>
+    </table>
+    <img src="/images/footer-image.jpg" alt="Footer Image" class="footer-image">
   </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
   <script>
     // JavaScript function to filter the table based on the search term
@@ -196,6 +246,30 @@
       for (let i = 1; i < rows.length; i++) {
         rows[i].style.display = "";
       }
+    }
+
+    // JavaScript function to download the table as an Excel file
+    function downloadExcel() {
+      // Get data from your table (similar to CSV)
+      const rows = document.querySelectorAll('table tr');
+      const data = [];
+      rows.forEach(row => {
+        const rowData = [];
+        row.querySelectorAll('td, th').forEach(cell => {
+          rowData.push(cell.innerText);
+        });
+        data.push(rowData);
+      });
+
+      // Create a new Excel sheet
+      const ws = XLSX.utils.aoa_to_sheet(data);
+
+      // Create a new workbook and add a sheet with the data
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Лист1');
+
+      // Save the workbook in Excel format
+      XLSX.writeFile(wb, 'action-history.xlsx');
     }
   </script>
 </body>

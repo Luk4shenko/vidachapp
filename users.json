@@ -1,8 +1,36 @@
 [
   {
-    "lastName": "Рудомазинс",
+    "lastName": " Пашнина",
     "firstName": "Ирина",
-    "birthDate": "08.08.2023",
+    "birthDate": "18.08.2023",
+    "equipment": [
+      "Зарядка Lenovo",
+      ""
+    ],
+    "adminpost": [
+      "Русаков",
+      ""
+    ],
+    "status": "Выдано"
+  },
+  {
+    "lastName": "Ермилов",
+    "firstName": "Андрей",
+    "birthDate": "23.08.2023",
+    "equipment": [
+      "Кликер",
+      ""
+    ],
+    "adminpost": [
+      "Другой",
+      "Лукашенко"
+    ],
+    "status": "Выдано"
+  },
+  {
+    "lastName": "Явич",
+    "firstName": "Алина",
+    "birthDate": "29.08.2023",
     "equipment": [
       "Гарнитура",
       ""
@@ -14,9 +42,65 @@
     "status": "Выдано"
   },
   {
-    "lastName": "Хмелькова",
+    "lastName": "Семенихина",
+    "firstName": "Надежда",
+    "birthDate": "05.09.2023",
+    "equipment": [
+      "Зарядка HP",
+      ""
+    ],
+    "adminpost": [
+      "Смирнов",
+      ""
+    ],
+    "status": "Выдано"
+  },
+  {
+    "lastName": "Гулакова",
+    "firstName": "Валерия",
+    "birthDate": "11.09.2023",
+    "equipment": [
+      "Мышь проводная",
+      ""
+    ],
+    "adminpost": [
+      "Смирнов",
+      ""
+    ],
+    "status": "Выдано"
+  },
+  {
+    "lastName": "Воронина",
+    "firstName": "Анастасия",
+    "birthDate": "14.09.2023",
+    "equipment": [
+      "Другое",
+      "Внешний жд"
+    ],
+    "adminpost": [
+      "Смирнов",
+      ""
+    ],
+    "status": "Выдано"
+  },
+  {
+    "lastName": "Ратнова",
+    "firstName": "Анастасия",
+    "birthDate": "19.09.2023",
+    "equipment": [
+      "Гарнитура",
+      ""
+    ],
+    "adminpost": [
+      "Айнетдинов",
+      ""
+    ],
+    "status": "Выдано"
+  },
+  {
+    "lastName": "Козлова",
     "firstName": "Екатерина",
-    "birthDate": "10.08.2023",
+    "birthDate": "19.09.2023",
     "equipment": [
       "Зарядка Lenovo",
       ""
@@ -28,9 +112,9 @@
     "status": "Выдано"
   },
   {
-    "lastName": "Федосеева",
-    "firstName": "Ольга ",
-    "birthDate": "11.08.2023",
+    "lastName": "Булычева",
+    "firstName": "Тамара",
+    "birthDate": "20.09.2023",
     "equipment": [
       "Мышь проводная",
       ""

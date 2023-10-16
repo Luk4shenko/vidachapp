@@ -4,7 +4,14 @@
   <title>Главная</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
-    /* Стили для контейнера */
+    /* Common styles for the page */
+    body {
+      font-family: 'Calibri', Arial, sans-serif;
+      background-color: #f7f7f7;
+      text-align: center;
+    }
+
+    /* Style for the container */
     .container {
       max-width: 700px;
       margin: 0 auto;
@@ -16,47 +23,55 @@
       text-align: center;
     }
 
-    /* Стили для голубых кнопок */
-    .btn-primary {
-      background-color: #005db9;
-      border-color: #005db9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 10px;
-      width: 100%;
-      font-size: 27px;
-    }
-
-    .btn-primary:hover {
-      background-color: #003e81;
-      border-color: #003e81;
-    }
-
-    /* Стили для блока с кнопками */
-    .btn-group {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-
-    /* Стили для кнопки "Панель администратора" */
-    .admin-btn {
-      display: block;
-      text-align: center;
-      margin-top: 20px;
-      width: 100%;
-      font-size: 18px;
-    }
-
-    /* Style for the images */
+    /* Style for the header image */
     .header-image {
       max-width: 25%;
       height: auto;
       margin-bottom: 20px;
     }
 
+    /* Style for the blue buttons */
+    .btn-primary {
+      background-color: #005db9;
+      color: #fff;
+      padding: 10px;
+      cursor: pointer;
+      margin: 6px;
+      width: 100%;
+      transition: all 0.3s;
+      font-size: 27px;
+      height: 70px; /* Высота кнопок */
+      border-radius: 4px; /* Закругленные углы */
+    }
+
+    .btn-primary:hover {
+      background-color: #003e81;
+      transform: scale(1.05);
+      box-shadow: 0 0 5px 0 #003e81;
+    }
+
+    /* Style for the button group */
+    .btn-group {
+      display: flex;
+      text-align: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    /* Style for the "Панель администратора" button */
+    .admin-btn {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      width: 100%;
+      font-size: 18px;
+      background-color: #ccc; /* Серый цвет */
+      border: 1px solid #ccc; /* Тонкая рамка */
+      height: 50px; /* Высота кнопки "Панель администратора" установлена как у других кнопок */
+      border-radius: 4px; /* Закругленные углы */
+    }
+
+    /* Style for the footer image */
     .footer-image {
       max-width: 100%;
       height: auto;
@@ -67,11 +82,9 @@
 <body>
   <div class="container">
     <img src="/images/stada_color.png" alt="IT STADA" class="header-image">
-    <div class="btn-group">
-      <a href="/user-form" class="btn btn-primary btn-lg" style="height: 70px;">Выдача оборудования</a>
-      <a href="/return-equipment" class="btn btn-primary btn-lg" style="height: 70px;">Возврат оборудования</a>
-    </div>
-    <a href="/admin-login" class="btn btn-primary btn-sm admin-btn">Панель администратора</a>
+      <a href="/user-form" class="btn btn-primary btn-lg">Выдача оборудования</a>
+    <a href="/return-equipment" class="btn btn-primary btn-lg">Возврат оборудования</a>
+    <a href="/admin-login" class="btn btn-primary admin-btn">Панель администратора</a>
     <img src="/images/footer-image.jpg" alt="Footer Image" class="footer-image">
   </div>
 </body>

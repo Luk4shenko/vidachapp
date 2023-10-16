@@ -5,6 +5,12 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 const port = 3000;
+const cors=require("cors");
+const corsOptions ={
+  origin:'*',
+  credentials: true,
+  optionSuccessStatus:200,
+}
 
 let usersData = [];
 let isAdminPanelOpen = false;
@@ -29,6 +35,7 @@ app.use((req, res, next) => {
   req.ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   next();
 });
+app.use(cors(corsOptions))
 
 // Read initial data from JSON files
 function initializeData() {
@@ -48,6 +55,13 @@ function initializeData() {
 
   try {
     const actionHistoryJson = fs.readFileSync('action_history.json');
+    actionHistory = JSON.parse(actionHistoryJson);
+  } catch (error) {
+    actionHistory = [];
+  }
+
+  try {
+    const actionHistoryJson = fs.readFileSync('employee.json');
     actionHistory = JSON.parse(actionHistoryJson);
   } catch (error) {
     actionHistory = [];
@@ -375,8 +389,42 @@ function generateUniqueSessionKey(username, ipAddress) {
   return `${username}_${ipAddress}_${Math.random()}`;
 }
 
+// Путь к файлу action_history.json
+const actionHistoryFilePath = path.join(__dirname, 'action_history.json');
+
+// Функция для очистки устаревших записей в action_history.json
+function cleanActionHistory() {
+  try {
+    const actionHistoryData = fs.readFileSync(actionHistoryFilePath, 'utf8');
+    const actionHistory = JSON.parse(actionHistoryData);
+
+    const currentDate = new Date();
+    const oneYearAgo = new Date(currentDate);
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+    // Фильтруем записи, оставляем только те, где deleteDate не старше одного года
+    const updatedActionHistory = actionHistory.filter((record) => {
+      const deleteDate = new Date(record.deleteDate);
+      return deleteDate > oneYearAgo;
+    });
+
+    // Перезаписываем файл action_history.json с обновленными данными
+    fs.writeFileSync(actionHistoryFilePath, JSON.stringify(updatedActionHistory, null, 2));
+  } catch (error) {
+    console.error('Error cleaning action history:', error);
+  }
+}
+
+// Вызываем функцию для чистки при старте сервера
+cleanActionHistory();
+
+// Устанавливаем интервал для периодической чистки раз в 24 часа
+const cleaningInterval = 24 * 60 * 60 * 1000; // 24 часа в миллисекундах
+setInterval(cleanActionHistory, cleaningInterval);
+
 // Start the server
 app.listen(port, () => {
   initializeData(); // Read initial data from JSON files
   console.log(`Server is running on http://localhost:${port}`);
 });
+
