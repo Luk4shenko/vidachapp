@@ -1,77 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Создание нового администратора</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <style>
-    body {
-      font-family: 'Calibri', Arial, sans-serif;
-      background-color: #f7f7f7;
-    }
-    /* Стили для заголовка */
-    h1 {
-      font-family: Calibri, Arial, sans-serif;
-      font-size: 36px;
-      font-weight: bold;
-      text-align: center;
-      margin-bottom: 20px;
-      color: #0c0b0b;
-    }
-
-    /* Стили для контейнера */
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    /* Стили для формы */
-    .form-container {
-      background-color: #f7f7f7;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Стили для кнопки "Добавить администратора" */
-    button[type="submit"] {
-      background-color: #005db9;
-      color: #fff;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      display: block;
-      text-align: center;
-      margin-top: 10px;
-      width: 100%;
-    }
-
-    button[type="submit"]:hover {
-      background-color: #003e81;
-    }
-
-    /* Стили для полей ввода */
-    input[type="text"],
-    input[type="password"] {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      margin-bottom: 15px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
+    <title>Добавить администратора</title>
 </head>
 <body>
-  <div class="container">
-    <h1>Создать нового администратора</h1>
-    <div class="form-container">
-      <form method="post" action="/add-admin">
-        <input type="text" name="newUsername" placeholder="Username" required><br>
-        <input type="password" name="newPassword" placeholder="Password" required><br>
-        <button type="submit">Создать новую учетную запись</button>
-      </form>
+    <div class="container">
+        <h1>Добавить администратора</h1>
+        <form action="/add-admin" method="post" onsubmit="return validateUsername()">
+            <label for="username">Имя пользователя:</label>
+            <input type="text" id="username" name="username" value="sc" required>
+            <br>
+            <label for="fullName">ФИО (автоматически):</label>
+            <input type="text" id="fullNameInput" readonly style="background-color: #f0f0f0; color: #333;">
+            <input type="hidden" id="hiddenFullName" name="fullName" value="">
+            <br>
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password" required>
+            <br>
+            <button type="submit">Добавить администратора</button>
+        </form>
+        <button onclick="window.location.href='/admin'">Отмена</button>
     </div>
-  </div>
+    <script src="/scripts.js"></script>
 </body>
 </html>

@@ -1,430 +1,541 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+const sqlite3 = require('sqlite3').verbose();
 const session = require('express-session');
-const cookieParser = require('cookie-parser');
-const fs = require('fs');
 const path = require('path');
+const bcrypt = require('bcrypt'); 
+
 const app = express();
-const port = 3000;
-const cors=require("cors");
-const corsOptions ={
-  origin:'*',
-  credentials: true,
-  optionSuccessStatus:200,
-}
+const port = 4000;
 
-let usersData = [];
-let isAdminPanelOpen = false;
-let adminCredentials = []; // Данные для аутентификации администратора
-let actionHistory = [];
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static('public'));
 
-app.set('trust proxy', 1);
-
-// Middleware
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
-  secret: 'your-secret-key',
-  resave: false,
-  saveUninitialized: false,
-  proxy: true // Установите этот параметр в true
+    secret: 'the_most_secret_key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: false, // установите в true если используете https
+        httpOnly: true,
+        maxAge: 60 * 60 * 1000 // 1 час
+    }
 }));
-app.use(express.static(path.join(__dirname, 'images')));
-// Middleware for getting the client IP address from the reverse proxy header
-app.use((req, res, next) => {
-  req.ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  next();
-});
-app.use(cors(corsOptions))
 
-// Read initial data from JSON files
-function initializeData() {
-  try {
-    const usersJson = fs.readFileSync('users.json');
-    usersData = JSON.parse(usersJson);
-  } catch (error) {
-    usersData = [];
-  }
+const saltRounds = 10;
 
-  try {
-    const adminJson = fs.readFileSync('admin.json');
-    adminCredentials = JSON.parse(adminJson);
-  } catch (error) {
-    adminCredentials = [];
-  }
-
-  try {
-    const actionHistoryJson = fs.readFileSync('action_history.json');
-    actionHistory = JSON.parse(actionHistoryJson);
-  } catch (error) {
-    actionHistory = [];
-  }
-
-  try {
-    const actionHistoryJson = fs.readFileSync('employee.json');
-    actionHistory = JSON.parse(actionHistoryJson);
-  } catch (error) {
-    actionHistory = [];
-  }
-}
-
-// Write data to JSON files
-function writeDataToFiles() {
-  fs.writeFileSync('users.json', JSON.stringify(usersData, null, 2));
-  fs.writeFileSync('admin.json', JSON.stringify(adminCredentials, null, 2));
-}
-
-// Function to read data from the file
-function readDataFromFile() {
-  try {
-    const data = fs.readFileSync('users.json');
-    usersData = JSON.parse(data);
-  } catch (error) {
-    usersData = [];
-  }
-}
-
-// Function to write data to the file
-function writeDataToFile() {
-  fs.writeFileSync('users.json', JSON.stringify(usersData));
-}
-
-// Function to read admin credentials from the file
-function readAdminCredentials() {
-  try {
-    const data = fs.readFileSync('admin.json');
-    adminCredentials = JSON.parse(data);
-  } catch (error) {
-    adminCredentials = []; // Изменяем на массив
-  }
-}
-
-// Function to write admin data to the file
-function writeAdminDataToFile(adminData) {
-  const adminJson = JSON.stringify(adminData);
-  fs.writeFileSync('admin.json', adminJson);
-}
-
-// Function to read action history from the file
-function readActionHistory() {
-  try {
-    const data = fs.readFileSync('action_history.json');
-    actionHistory = JSON.parse(data);
-  } catch (error) {
-    actionHistory = [];
-  }
-}
-
-// Function to write action history to the file
-function writeActionHistoryToFile() {
-  fs.writeFileSync('action_history.json', JSON.stringify(actionHistory));
-}
-
-// Home page with user form
-app.get('/user-form', (req, res) => {
-  res.render('user-form.ejs');
+// Подключение к базе данных SQLite
+const db = new sqlite3.Database('./db/journal.db', (err) => {
+    if (err) {
+        console.error('Database connection error:', err.message);
+    } else {
+        console.log('Connected to the SQLite database.');
+        createTables(); // Создание таблиц при первом подключении
+    }
 });
 
-app.post('/submit', (req, res) => {
-  const { lastName, firstName, birthDate, equipment, returnDate, admin, adminpost } = req.body;
+// Функция для создания таблиц в базе данных
+function createTables() {
+    db.run(`CREATE TABLE IF NOT EXISTS issues (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        fullName TEXT,
+        issuedBy TEXT,
+        issueDate TEXT DEFAULT (datetime('now','localtime')),
+        journalType TEXT,
+        journalNumber TEXT,
+        additionalInfo TEXT,
+        userDate TEXT,
+        returnDate TEXT,
+        returnConfirmed INTEGER DEFAULT 0,
+        returnConfirmedBy TEXT
+    )`);
+    db.run(`CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE,
+        password TEXT,
+        role TEXT,
+        fullName TEXT
+    )`, () => {
+        const adminPassword = '12345678';
+        db.get('SELECT * FROM users WHERE id = 0', (err, row) => {
+            if (err) {
+                console.error('Database query error:', err.message);
+            } else if (!row) {
+                bcrypt.hash(adminPassword, saltRounds, (err, hash) => {
+                    if (err) {
+                        console.error('Error hashing admin password:', err.message);
+                    } else {
+                        db.run(`INSERT INTO users (id, username, password, role, fullname) VALUES (0, 'admin', ?, 'god', 'admin')`, [hash], (err) => {
+                            if (err) {
+                                console.error('Error inserting admin user:', err.message);
+                            } else {
+                                console.log('Admin user created successfully');
+                            }
+                        });
+                    }
+                });
+            } else {
+                console.log('Admin user already exists');
+            }
+        });
+    });
 
-  const userData = {
-    lastName,
-    firstName,
-    birthDate,
-    equipment,
-    returnDate,
-    admin,
-    adminpost,
-    status: "Выдано", // Add the status field with initial value "Выдано"
-  };
+    db.run(`CREATE TABLE IF NOT EXISTS journalTypes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT UNIQUE
+    )`);
 
-  usersData.push(userData);
-  writeDataToFile();
+    db.run(`CREATE TABLE IF NOT EXISTS journalNumbers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        currentNumber INTEGER
+    )`, () => {
+        db.get('SELECT * FROM journalNumbers WHERE id = 1', (err, row) => {
+            if (err) {
+                console.error('Database query error:', err.message);
+            } else if (!row) {
+                db.run(`INSERT INTO journalNumbers (id, currentNumber) VALUES (1, 0)`, (err) => {
+                    if (err) {
+                        console.error('Error inserting initial journal number:', err.message);
+                    } else {
+                        console.log('Initial journal number created successfully');
+                    }
+                });
+            }
+        });
+    });
+}
 
-  res.redirect('/'); // Redirect back to the user form
+function checkAuth(req, res, next) {
+    if (req.session.user && (req.session.user.role === 'admin' || req.session.user.role === 'god')) {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+}
+
+// Function to check if the user has 'god' role
+function checkGodRole(req, res, next) {
+    if (req.session.user && req.session.user.role === 'god') {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+}
+
+// Route to render the password reset form
+app.get('/reset-password', checkGodRole, (req, res) => {
+    res.render('reset-password');
 });
 
-// Admin login page
-app.get('/admin-login', (req, res) => {
-  res.render('admin-login.ejs');
+// Route to handle password reset form submission
+app.post('/reset-password', checkGodRole, (req, res) => {
+    const { username, newPassword } = req.body;
+
+    // Check if the user exists
+    db.get('SELECT * FROM users WHERE username = ?', [username], (err, user) => {
+        if (err) {
+            console.error('Database query error:', err.message);
+            res.status(500).send('Database query error');
+        } else if (!user) {
+            res.status(404).send('User not found');
+        } else {
+            // Hash the new password
+            bcrypt.hash(newPassword, saltRounds, (err, hash) => {
+                if (err) {
+                    console.error('Error hashing new password:', err.message);
+                    res.status(500).send('Error hashing new password');
+                } else {
+                    // Update the user's password in the database
+                    db.run('UPDATE users SET password = ? WHERE username = ?', [hash, username], (err) => {
+                        if (err) {
+                            console.error('Database update error:', err.message);
+                            res.status(500).send('Database update error');
+                        } else {
+                            res.send('Password reset successfully');
+                        }
+                    });
+                }
+            });
+        }
+    });
 });
 
-// Admin login handler
-app.post('/login', (req, res) => {
-  const { adminUsername, adminPassword } = req.body;
+// Функция для генерации следующего номера журнала
+function generateNextJournalNumber(callback) {
+    db.get('SELECT currentNumber FROM journalNumbers WHERE id = 1', (err, row) => {
+        if (err) {
+            console.error('Database query error:', err.message);
+            return callback(err);
+        } else {
+            const prefix = 'ИТ'; // Постоянная часть номера
+            const currentYear = new Date().getFullYear().toString().slice(-2); // Получаем текущий год (например, 24 для 2024 года)
+            const nextNumber = row.currentNumber + 1; // Увеличиваем номер на 1
 
-  readAdminCredentials();
+            const journalNumber = `${prefix}${currentYear}-${nextNumber.toString()}`;
 
-  // Используем метод some() для проверки аутентификации
-  if (
-    adminCredentials.some(
-      (admin) =>
-        admin.username === adminUsername && admin.password === adminPassword
-    )
-  ) {
-    console.log('login adminUsername:', adminUsername,'req.session.adminUsername:', req.session.adminUsername);
+            // Обновляем значение currentNumber в базе данных
+            db.run('UPDATE journalNumbers SET currentNumber = ? WHERE id = 1', [nextNumber], (err) => {
+                if (err) {
+                    console.error('Database update error:', err.message);
+                    return callback(err);
+                } else {
+                    return callback(null, journalNumber);
+                }
+            });
+        }
+    });
+}
 
-    // Генерируем уникальный сессионный ключ
-    const sessionKey = generateUniqueSessionKey(adminUsername, req.ip);
-    
-    // Сохраняем сессионный ключ в сессии
-    req.session.adminSessionKey = sessionKey;
-    req.session.adminUsername = adminUsername; // Store the admin username in the session
-    console.log('login adminUsername:', adminUsername,'req.session.adminUsername:', req.session.adminUsername);
-    isAdminPanelOpen = true;
-    readDataFromFile();
-    res.redirect('/admin');
-  } else {
-    res.send('Incorrect username or password');
-  }
-});
-
-
-// Admin panel page displaying all users
-app.get('/admin', (req, res) => {
-  if (isAdminPanelOpen) {
-    res.render('admin-panel.ejs', { users: usersData, adminUsername: req.session.adminUsername });
-    console.log('admin req.session.adminUsername:', req.session.adminUsername);
-  } else {
-    res.redirect('/admin-login');
-  }
-});
-
-// Delete user from the admin panel
-app.post('/delete/:index', (req, res) => {
-  const { index } = req.params;
-  usersData.splice(index, 1);
-  writeDataToFile();
-  res.redirect('/admin');
-});
-
-// Return to the user form from the admin panel
-app.post('/return', (req, res) => {
-  isAdminPanelOpen = false;
-  res.redirect('/');
-});
-
-// Home page with user form
+// Маршрут для главной страницы
 app.get('/', (req, res) => {
-  res.render('main-page.ejs');
+    res.render('index');
 });
 
-// Submit user form data and redirect back to the form
-app.post('/submit', (req, res) => {
-  const { lastName, firstName, birthDate, equipment, adminpost } = req.body;
+app.get('/issue', (req, res) => {
+    db.all('SELECT name FROM journalTypes', (err, journalTypes) => {
+        if (err) {
+            console.error('Database query error:', err.message);
+            res.status(500).send('Database query error');
+            return;
+        }
 
-  const userData = {
-    lastName,
-    firstName,
-    birthDate,
-    equipment,
-    adminpost,
-    status: "Выдано", // Add the status field with initial value "Выдано"
-  };
-
-  usersData.push(userData);
-  writeDataToFile();
-
-  res.redirect('/'); // Redirect back to the user form
-});
-
-// Page for returning equipment
-app.get('/return-equipment', (req, res) => {
-  readDataFromFile();
-  res.render('return-equipment.ejs', { users: usersData });
-});
-
-// Return equipment route
-app.post('/return-equipment/:index', (req, res) => {
-  const { index } = req.params;
-  usersData[index].status = "На подтверждении"; // Update the status to "На подтверждении"
-  usersData[index].returnedDate = new Date().toLocaleString('ru-RU'); // Add the returned date
-  writeDataToFile();
-
-  // Redirect to the Возврат оборудования page
-  res.redirect('/return-equipment');
-});
-
-///////////////////////////////////////////////////
-app.post('/return/:index', (req, res) => {
-  const { index } = req.params;
-  const user = usersData[index];
-
-  if (user.status === "На подтверждении") {
-    user.confirm = true;
-    writeDataToFiles();
-
-    // Чтение истории действий перед добавлением новой записи
-    readActionHistory();
-    console.log('return req.session.adminUsername:', req.session.adminUsername);
-
-    const admin = req.session.adminUsername || 'Unknown'; // Use req.session.adminUsername here
-    const deleteDate = new Date().toLocaleString('ru-RU'); // Форматирование даты как "дд.мм.гггг, чч:мм"
-    actionHistory.push({
-      ...user,
-      admin,
-      deleteDate,
-    });
-    writeActionHistoryToFile();
-
-    // Удаление записи из массива usersData
-    usersData.splice(index, 1);
-    writeDataToFiles();
-  } else {
-    // Возврат предупреждающего сообщения, если оборудование еще не возвращено
-    res.send('<script>alert("Оборудование еще не возвращено"); window.location.href="/admin-panel";</script>');
-    return;
-  }
-
-  res.redirect('/admin-panel');
-});
-
-// Admin panel route
-app.get('/admin-panel', (req, res) => {
-  readDataFromFile();
-  res.render('admin-panel.ejs', { users: usersData, adminUsername: req.session.adminUsername });
-  console.log('admin-panel req.session.adminUsername:', req.session.adminUsername);
-});
-
-// Search and filter the admin panel
-app.post('/admin-panel', (req, res) => {
-  const searchTerm = req.body.searchTerm.toLowerCase();
-  readDataFromFile();
-
-  const filteredUsers = usersData.filter(
-    (user) =>
-      user.lastName.toLowerCase().includes(searchTerm) ||
-      user.firstName.toLowerCase().includes(searchTerm) ||
-      user.equipment.toLowerCase().includes(searchTerm) ||
-      user.adminpost.toLowerCase().includes(searchTerm) ||
-      user.birthDate.toLowerCase().includes(searchTerm)
-  );
-
-  res.render('admin-panel.ejs', { users: filteredUsers });
-});
-
-// Confirm equipment return
-app.post('/confirm-return/:index', (req, res) => {
-  const { index } = req.params;
-  usersData.splice(index, 1);
-  writeDataToFiles();
-
-  // Add action to the history
-  const admin = req.session.adminUsername; // Access the stored admin username from the session
-  const deleteDate = new Date().toLocaleString('ru-RU'); // Format date as "дд.мм.гггг, чч:мм"
-  actionHistory.push({
-    ...usersData[index], // Use user data, not actionHistory[index]
-    admin,
-    deleteDate,
-  });
-  writeActionHistoryToFile(); // Save action history to file
-
-  res.redirect('/admin-panel');
-});
-
-// Display action history
-app.get('/action-history', (req, res) => {
-  readActionHistory();
-  res.render('action-history.ejs', { history: actionHistory });
-});
-
-// Page for changing admin password (requires authentication)
-app.get('/change-password', requireAuth, (req, res) => {
-  res.render('change-password.ejs');
-});
-
-// Handle changing admin password
-app.post('/change-password', requireAuth, (req, res) => {
-  const { oldPassword, newPassword } = req.body;
-  const admin = req.session.adminUsername;
-
-  const adminIndex = adminCredentials.findIndex(a => a.username === admin);
-
-  if (adminIndex !== -1 && adminCredentials[adminIndex].password === oldPassword) {
-    adminCredentials[adminIndex].password = newPassword;
-    writeAdminDataToFile(adminCredentials);
-    res.redirect('/admin-panel');
-  } else {
-    res.send('Incorrect old password');
-  }
-});
-
-// Page for adding new admin (requires authentication)
-app.get('/add-admin', requireAuth, (req, res) => {
-  res.render('add-admin.ejs');
-});
-
-// Handle adding new admin
-app.post('/add-admin', requireAuth, (req, res) => {
-  const { newUsername, newPassword } = req.body;
-  const newAdmin = { username: newUsername, password: newPassword };
-
-  adminCredentials.push(newAdmin);
-  writeAdminDataToFile(adminCredentials);
-
-  res.redirect('/admin-panel');
-});
-
-// Middleware for checking authentication
-function requireAuth(req, res, next) {
-  if (
-    req.session.adminUsername &&
-    req.session.adminSessionKey &&
-    req.session.adminSessionKey === generateUniqueSessionKey(req.session.adminUsername, req.ip) &&
-    isAdminPanelOpen
-  ) {
-    // User is authenticated and admin panel is open, proceed
-    next();
-  } else {
-    // User is not authenticated or admin panel is not open, redirect to login
-    res.redirect('/admin-login');
-  }
-}
-
-// Функция для генерации уникального сессионного ключа
-function generateUniqueSessionKey(username, ipAddress) {
-  // Здесь вы можете использовать любой способ для генерации уникального ключа,
-  // например, комбинировать имя администратора, IP-адрес и случайное значение
-  return `${username}_${ipAddress}_${Math.random()}`;
-}
-
-// Путь к файлу action_history.json
-const actionHistoryFilePath = path.join(__dirname, 'action_history.json');
-
-// Функция для очистки устаревших записей в action_history.json
-function cleanActionHistory() {
-  try {
-    const actionHistoryData = fs.readFileSync(actionHistoryFilePath, 'utf8');
-    const actionHistory = JSON.parse(actionHistoryData);
-
-    const currentDate = new Date();
-    const oneYearAgo = new Date(currentDate);
-    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-
-    // Фильтруем записи, оставляем только те, где deleteDate не старше одного года
-    const updatedActionHistory = actionHistory.filter((record) => {
-      const deleteDate = new Date(record.deleteDate);
-      return deleteDate > oneYearAgo;
+            res.render('issue', { journalTypes: journalTypes });
+        });
     });
 
-    // Перезаписываем файл action_history.json с обновленными данными
-    fs.writeFileSync(actionHistoryFilePath, JSON.stringify(updatedActionHistory, null, 2));
-  } catch (error) {
-    console.error('Error cleaning action history:', error);
-  }
+app.get('/admin', checkAuth, (req, res) => {
+    db.all('SELECT * FROM issues', (err, rows) => {
+        if (err) {
+            console.error('Database query error:', err.message);
+            res.status(500).send('Database query error');
+        } else {
+            res.render('admin', { issues: rows, username: req.session.user.username });
+        }
+    });
+});
+
+app.get('/login', (req, res) => {
+    res.render('login'); // Ensure you have a 'login.ejs' view
+});
+
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+
+    db.get('SELECT * FROM users WHERE username = ?', [username], (err, user) => {
+        if (err) {
+            console.error('Database query error:', err.message);
+            res.status(500).send('Database query error');
+        } else if (!user) {
+            res.status(401).send('Invalid username or password');
+        } else {
+            bcrypt.compare(password, user.password, (err, result) => {
+                if (err) {
+                    console.error('Error comparing passwords:', err.message);
+                    res.status(500).send('Error comparing passwords');
+                } else if (result) {
+                    req.session.user = user;
+                    res.redirect('/admin');
+                } else {
+                    res.status(401).send('Invalid username or password');
+                }
+            });
+        }
+    });
+});
+
+app.get('/change-password', checkAuth, (req, res) => {
+    res.render('change-password'); // Ensure you have a 'change-password.ejs' view
+});
+
+app.post('/change-password', checkAuth, (req, res) => {
+    const { oldPassword, newPassword } = req.body;
+    const userId = req.session.user.id;
+
+    db.get('SELECT * FROM users WHERE id = ?', [userId], (err, user) => {
+        if (err) {
+            console.error('Database query error:', err.message);
+            res.status(500).send('Database query error');
+        } else {
+            bcrypt.compare(oldPassword, user.password, (err, result) => {
+                if (err) {
+                    console.error('Error comparing passwords:', err.message);
+                    res.status(500).send('Error comparing passwords');
+                } else if (result) {
+bcrypt.hash(newPassword, saltRounds, (err, hash) => {
+    if (err) {
+        console.error('Error hashing new password:', err.message);
+        res.status(500).send('Error hashing new password');
+    } else {
+        db.run('UPDATE users SET password = ? WHERE id = ?', [hash, userId], (err) => {
+            if (err) {
+                console.error('Database update error:', err.message);
+                res.status(500).send('Database update error');
+            } else {
+                res.send('Password changed successfully');
+            }
+        });
+    }
+});
+                } else {
+                    res.status(401).send('Incorrect old password');
+                }
+            });
+        }
+    });
+});
+
+app.get('/add-admin', checkAuth, (req, res) => {
+    res.render('add-admin'); // Ensure you have a 'add-admin.ejs' view
+});
+
+app.post('/add-admin', checkAuth, (req, res) => {
+    const { username, password, fullName } = req.body;
+
+    bcrypt.hash(password, saltRounds, (err, hash) => {
+        if (err) {
+            console.error('Error hashing password:', err.message);
+            return res.status(500).send('Error hashing password');
+        }
+        
+        db.run('INSERT INTO users (username, password, role, fullName) VALUES (?, ?, ?, ?)', [username, hash, 'admin', fullName], (err) => {
+            if (err) {
+                console.error('Database insert error:', err.message);
+                return res.status(500).send('Database insert error');
+            }
+
+            res.send('New admin added successfully');
+        });            
+    });
+});
+
+app.post('/issue', (req, res) => {
+    const { fullName, issuedBy, journalType, medicineType, additionalInfo } = req.body;
+
+    // Generate the next journal number
+    generateNextJournalNumber((err, journalNumber) => {
+        if (err) {
+            res.status(500).send('Error generating journal number');
+        } else {
+            // Insert data into the 'issues' table
+            db.run(`INSERT INTO issues (fullName, issuedBy, journalType, medicineType, additionalInfo, journalNumber, issueDate, returnConfirmed)
+                    VALUES (?, ?, ?, ?, ?, ?, datetime('now','localtime'), 0)`,
+                    [fullName, issuedBy, journalType, medicineType, additionalInfo, journalNumber],
+                    (err) => {
+                        if (err) {
+                            console.error('Error inserting issue:', err.message);
+                            res.status(500).send('Error inserting issue');
+                        } else {
+                            console.log('Issue inserted successfully');
+                            res.redirect('/');
+                        }
+                    });
+        }
+    });
+});
+
+// Функция для предсказания следующего номера журнала
+function predictNextJournalNumber(callback) {
+    db.get('SELECT currentNumber FROM journalNumbers WHERE id = 1', (err, row) => {
+        if (err) {
+            console.error('Database query error:', err.message);
+            return callback(err);
+        } else {
+            const prefix = 'ИТ'; // Постоянная часть номера
+            const currentYear = new Date().getFullYear().toString().slice(-2); // Получаем текущий год (например, 24 для 2024 года)
+            const nextNumber = row.currentNumber + 1; // Увеличиваем номер на 1
+
+            const journalNumber = `${prefix}${currentYear}-${nextNumber.toString()}`;
+
+            // Вызываем колбэк с предсказанным номером
+            return callback(null, journalNumber);
+        }
+    });
 }
 
-// Вызываем функцию для чистки при старте сервера
-cleanActionHistory();
+// Маршрут для предсказания следующего номера журнала
+app.get('/predictNextJournalNumber', (req, res) => {
+    predictNextJournalNumber((err, journalNumber) => {
+        if (err) {
+            res.status(500).send('Error predicting next journal number');
+        } else {
+            res.send(journalNumber);
+        }
+    });
+});
 
-// Устанавливаем интервал для периодической чистки раз в 24 часа
-const cleaningInterval = 24 * 60 * 60 * 1000; // 24 часа в миллисекундах
-setInterval(cleanActionHistory, cleaningInterval);
+app.post('/confirmReturn/:id', checkAuth, (req, res) => {
+    const issueId = req.params.id;
+    const returnConfirmedBy = req.session.user.fullName; // Используем полное имя текущего пользователя
 
-// Start the server
+    db.run(`UPDATE issues SET returnDate = datetime('now','localtime'),
+                              returnConfirmed = 2,
+                              returnConfirmedBy = ?
+            WHERE id = ?`,
+            [returnConfirmedBy, issueId],
+            (err) => {
+                if (err) {
+                    console.error('Error confirming return:', err.message);
+                    res.status(500).send('Error confirming return');
+                } else {
+                    res.redirect('/admin');
+                }
+            });
+});
+
+app.get('/search', checkAuth, (req, res) => {
+    const searchQuery = req.query.search;
+    const query = `
+        SELECT * FROM issues
+        WHERE fullName LIKE ? OR issuedBy LIKE ? OR journalType LIKE ? OR medicineType LIKE ? OR journalNumber LIKE ? OR additionalInfo LIKE ? OR returnDate LIKE ? OR returnConfirmedBy LIKE ?
+    `;
+    const params = [`%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`];
+
+    db.all(query, params, (err, rows) => {
+        if (err) {
+            console.error('Database query error:', err.message);
+            res.status(500).send('Database query error');
+        } else {
+            res.render('admin', { issues: rows, username: req.session.user.username });
+        }
+    });
+});
+
+// Маршрут для получения типов журналов
+app.get('/getJournalTypes', (req, res) => {
+    db.all('SELECT name FROM journalTypes', (err, rows) => {
+        if (err) {
+            console.error('Database query error:', err.message);
+            res.status(500).send('Database query error');
+        } else {
+            res.json(rows); // Отправляем список типов журналов в формате JSON
+        }
+    });
+});
+
+app.get('/reset', checkAuth, (req, res) => {
+    db.all('SELECT * FROM issues', (err, rows) => {
+        if (err) {
+            console.error('Database query error:', err.message);
+            res.status(500).send('Database query error');
+        } else {
+            res.render('admin', { issues: rows });
+        }
+    });
+});
+
+// Route to render admin page (requires admin authentication)
+app.get('/admin-panel', checkAuth, (req, res) => {
+    db.all('SELECT * FROM journalTypes', (err, journalTypes) => {
+        if (err) {
+            console.error('Database query error:', err.message);
+            res.status(500).send('Database query error');
+            return;
+        }
+
+            // Render admin-panel.ejs with fetched data
+            res.render('admin-panel', { journalTypes: journalTypes });
+        });
+    });
+
+// Route to handle adding a new journal type
+app.post('/add-journal-type', checkAuth, (req, res) => {
+    const { journalTypeName } = req.body;
+
+    db.run('INSERT INTO journalTypes (name) VALUES (?)', [journalTypeName], (err) => {
+        if (err) {
+            console.error('Error inserting journal type:', err.message);
+            res.status(500).send('Error inserting journal type');
+        } else {
+            res.redirect('/admin-panel'); // Redirect to admin page after insertion
+        }
+    });
+});
+
+// Route to handle deleting a journal type
+app.post('/delete-journal-type/:id', checkAuth, (req, res) => {
+    const { id } = req.params;
+
+    db.run('DELETE FROM journalTypes WHERE id = ?', [id], (err) => {
+        if (err) {
+            console.error('Error deleting journal type:', err.message);
+            res.status(500).send('Error deleting journal type');
+        } else {
+            res.redirect('/admin-panel'); // Redirect to admin page after deletion
+        }
+    });
+});
+
+// Страница возврата пользователем
+app.get('/return', (req, res) => {
+    res.render('return'); // Убедитесь, что у вас есть файл 'return.ejs' в папке 'views'
+});
+
+// Маршрут для поиска пользователей по ФИО
+app.get('/search-users', (req, res) => {
+    const searchTerm = req.query.term ? req.query.term.trim().toLowerCase() : '';
+
+    // Если searchTerm пустой, возвращаем пустой массив
+    if (!searchTerm) {
+        return res.json([]);
+    }
+
+    db.all(`
+        SELECT DISTINCT fullName 
+        FROM issues 
+        WHERE LOWER(fullName) LIKE ? AND returnConfirmed = 0`, [`%${searchTerm}%`], (err, rows) => {
+        if (err) {
+            console.error('Database query error:', err.message);
+            return res.status(500).send(err.message);
+        }
+        res.json(rows);
+    });
+});
+
+// Маршрут для получения списка журналов пользователя
+app.get('/get-user-issues', (req, res) => {
+    const userFullName = req.query.userFullName;
+    if (!userFullName) {
+        return res.status(400).send('User Full Name is required');
+    }
+
+    db.all(`SELECT id, issuedBy, issueDate, journalType, journalNumber, additionalInfo 
+            FROM issues 
+            WHERE fullName = ? AND returnConfirmed = 0`, [userFullName], (err, rows) => {
+        if (err) {
+            res.status(500).send(err.message);
+            return;
+        }
+        res.json(rows);
+    });
+});
+
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+// Маршрут для подтверждения возврата
+app.post('/confirm-return', (req, res) => {
+    const issueId = req.body.issueId;
+    const userDate = formatDate(new Date());
+    db.run(`UPDATE issues SET returnConfirmed = 1, userDate = ? WHERE id = ?`, [userDate, issueId], function(err) {
+        if (err) {
+            res.status(500).send(err.message);
+            return;
+        }
+        res.status(200).send('Возврат подтвержден');
+    });
+});
+
 app.listen(port, () => {
-  initializeData(); // Read initial data from JSON files
-  console.log(`Server is running on http://localhost:${port}`);
+    console.log(`App listening at http://localhost:${port}`);
 });
-

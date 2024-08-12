@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
+    <title>Выдача оборудования</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Выдача оборудования</h1>
+        <form action="/issue" method="POST">
+            <label for="journalNumber "style="font-weight: bold; font-size: 18px;">Номер заявки:</label>
+            <span id="journalNumber" style="font-weight: bold; font-size: 18px;"></span><br><br>
+
+            <label for="fullName">ФИО:</label>
+            <input type="text" id="fullName" name="fullName" required oninput="searchEmployee('fullName', this.value)" autocomplete="off"><br><br>
+
+            <label for="issuedBy">Выдал:</label>
+            <input type="text" id="issuedBy" name="issuedBy" required oninput="searchEmployee('issuedBy', this.value)" autocomplete="off"><br><br>
+
+            <label for="journalType">Тип оборудования:</label>
+            <select id="journalType" name="journalType" required>
+                <option value="" disabled selected>Выберите тип оборудования</option>
+                <!-- Опции будут добавлены динамически -->
+            </select><br><br>
+            
+            <label for="additionalInfo">Комментарий:</label><br>
+            <textarea id="additionalInfo" name="additionalInfo" rows="4" cols="50" autocomplete="off"></textarea><br><br>
+            
+            <button type="submit">Запросить оборудование</button>
+            <button type="button" onclick="window.location.href='/'">Отмена</button>
+        </form>
+    </div>
+    <script src="/scripts.js"></script>
+</body>
+</html>
