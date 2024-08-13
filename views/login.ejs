@@ -1,17 +1,24 @@
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="/css/styles.css">
-
-<div class="container">
-  <h1>Авторизация</h1>
-<form action="/login" method="post">
-    <label for="username">Логин:</label>
-    <input type="text" id="username" name="username">
-    <label for="password">Пароль:</label>
-    <input type="password" id="password" name="password">
-    <br>
-    <br>
-    <button type="submit">Войти</button>
-</form>
-<button onclick="window.location.href='/'">Отмена</button>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
+    <title>Авторизация</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Авторизация</h1>
+        <form action="/login" method="post">
+            <label for="username">Логин:</label>
+            <input type="text" id="username" name="username" onInput="this.value = this.value.toLowerCase()">
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password">
+            <br>
+            <br>
+            <button type="submit">Войти</button>
+        </form>
+        <button onclick="window.location.href='/'">Отмена</button>
+    </div>
+</body>
+</html>

@@ -19,8 +19,8 @@
         <form action="/admin-panel" method="GET">
             <button type="submit">Редактирование справочника</button>
         </form>
-        <form id="excelExportForm" action="/export-to-excel" method="POST">
-            <button type="submit" id="exportToExcel">Экспорт в Excel</button>
+        <form action="/export-to-excel" method="POST">
+            <button type="submit">Экспорт всех заявок Excel</button>
         </form>
         <form action="/change-password" method="GET">
             <button type="submit">Сменить пароль</button>
@@ -56,8 +56,7 @@
             </tr>
         </thead>
         <tbody>
-            <!-- Здесь будут данные из базы данных -->
-            <% issues.sort((a, b) => a.returnConfirmed - b.returnConfirmed).forEach(issue => { %>
+            <% issues.forEach(issue => { %>
                 <tr>
                     <td><%= issue.fullName %></td>
                     <td><%= issue.issuedBy %></td>

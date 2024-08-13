@@ -4,9 +4,10 @@ const sqlite3 = require('sqlite3').verbose();
 const session = require('express-session');
 const path = require('path');
 const bcrypt = require('bcrypt'); 
+const Excel = require('exceljs');
 
 const app = express();
-const port = 4000;
+const port = 3000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -207,11 +208,29 @@ app.get('/issue', (req, res) => {
     });
 
 app.get('/admin', checkAuth, (req, res) => {
-    db.all('SELECT * FROM issues', (err, rows) => {
+    const query = `
+        SELECT * FROM issues 
+        WHERE returnConfirmed IN (0, 1)
+        UNION ALL
+        SELECT * FROM issues 
+        WHERE returnConfirmed = 2 
+        ORDER BY issueDate DESC 
+        LIMIT 50
+    `;
+
+    db.all(query, [], (err, rows) => {
         if (err) {
             console.error('Database query error:', err.message);
             res.status(500).send('Database query error');
         } else {
+            // Sort the results: returnConfirmed 1 first, then 0, then 2
+            rows.sort((a, b) => {
+                if (a.returnConfirmed === 1 && b.returnConfirmed !== 1) return -1;
+                if (a.returnConfirmed === 0 && b.returnConfirmed === 2) return -1;
+                if (a.returnConfirmed === b.returnConfirmed) return 0;
+                return 1;
+            });
+
             res.render('admin', { issues: rows, username: req.session.user.username });
         }
     });
@@ -222,7 +241,8 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-    const { username, password } = req.body;
+    const username = req.body.username.toLowerCase(); // Преобразуем в нижний регистр
+    const { password } = req.body;
 
     db.get('SELECT * FROM users WHERE username = ?', [username], (err, user) => {
         if (err) {
@@ -533,6 +553,54 @@ app.post('/confirm-return', (req, res) => {
             return;
         }
         res.status(200).send('Возврат подтвержден');
+    });
+});
+
+app.post('/export-to-excel', checkAuth, (req, res) => {
+    const query = 'SELECT * FROM issues ORDER BY issueDate DESC';
+
+    db.all(query, [], (err, rows) => {
+        if (err) {
+            console.error('Database query error:', err.message);
+            return res.status(500).send('Error exporting data');
+        }
+
+        // Create a new workbook and worksheet
+        const workbook = new Excel.Workbook();
+        const worksheet = workbook.addWorksheet('Журнал выдачи оборудования');
+
+        // Add headers
+        worksheet.addRow(['Получил', 'Выдал', 'Дата выдачи', 'Тип оборудования', 'Номер заявки', 'Комментарий', 'Дата возврата', 'Дата подтверждения', 'Возврат подтвердил', 'Статус']);
+
+        // Add data
+        rows.forEach(row => {
+            worksheet.addRow([
+                row.fullName,
+                row.issuedBy,
+                row.issueDate,
+                row.journalType,
+                row.journalNumber,
+                row.additionalInfo,
+                row.userDate || '-',
+                row.returnDate || '-',
+                row.returnConfirmedBy || '-',
+                row.returnConfirmed === 2 ? 'Возвращено' : (row.returnConfirmed === 1 ? 'Ожидает подтверждения' : 'Не возвращено')
+            ]);
+        });
+
+        // Set up the response
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=journal_data.xlsx');
+
+        // Write to the response
+        workbook.xlsx.write(res)
+            .then(() => {
+                res.end();
+            })
+            .catch(err => {
+                console.error('Error writing Excel file:', err);
+                res.status(500).send('Error generating Excel file');
+            });
     });
 });
 
