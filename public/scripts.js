@@ -43,24 +43,34 @@ window.onload = function() {
         .catch(error => console.error('Error fetching next journal number:', error));
 };
 
+let searchEmployeeDebounceTimer;
+
 async function searchEmployee(field, query) {
     if (query.length < 3) {
         return; // слишком короткий запрос
     }
 
-    try {
-        const response = await fetch(`https://nn-app-020.stada.ru/StadaIdentityService/api/employee/s?search=${encodeURIComponent(query)}`);
-        if (!response.ok) {
-            throw new Error(`Ошибка сети: ${response.status}`);
-        }
-
-        const data = await response.json();
-        const results = data.map(employee => employee.fullName);
-        
-        updateSuggestions(field, results);
-    } catch (error) {
-        console.error('Ошибка при поиске сотрудников:', error);
+    // Очищаем предыдущий таймер
+    if (searchEmployeeDebounceTimer) {
+        clearTimeout(searchEmployeeDebounceTimer);
     }
+
+    // Устанавливаем новый таймер
+    searchEmployeeDebounceTimer = setTimeout(async () => {
+        try {
+            const response = await fetch(`https://nn-app-020.stada.ru/StadaIdentityService/api/employee/s?search=${encodeURIComponent(query)}`);
+            if (!response.ok) {
+                throw new Error(`Ошибка сети: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const results = data.map(employee => employee.fullName);
+            
+            updateSuggestions(field, results);
+        } catch (error) {
+            console.error('Ошибка при поиске сотрудников:', error);
+        }
+    }, 300); // Задержка в 300 миллисекунд
 }
 
 function updateSuggestions(field, suggestions) {
