@@ -1,70 +1,110 @@
-# Репозиторий "Система выдачи и учета возвратов оборудования"
+# Equipment Management System
 
-## Описание
-Этот репозиторий содержит веб-приложение для учета выдачи и возврата оборудования с использованием базы данных SQLite. Основной функционал включает управление оборудованием, администрирование пользователей и администраторов, а также поиск по данным.
+## Description
+This repository contains a web application for managing equipment issuance and returns using a SQLite database. The system provides functionality for equipment management, user and admin administration, and data search capabilities.
 
-## Используемые технологии
-- HTML
-- CSS (без стилей в рамках текущего задания)
-- JavaScript (Node.js)
-- Express.js
-- EJS (шаблонизатор для создания представлений)
-- SQLite (база данных для хранения данных)
+## Key Features
+- Equipment issuance and return tracking
+- Automatic generation of unique issuance numbers
+- User-friendly interface for equipment returns
+- Admin panel for comprehensive management
+- Search functionality across all records
+- Excel export of all equipment records
+- User and admin management
+- Equipment type management
 
-## Структура проекта
-- /views: Папка с EJS шаблонами для представлений.
-- /public: Папка со стилями или иными файлами для front-end.
-- app.js: Основной файл сервера Express и логики приложения.
-- package.json: Файл с зависимостями Node.js.
+## Technologies Used
+- Backend: Node.js with Express.js
+- Frontend: HTML, CSS, JavaScript
+- Database: SQLite
+- View Engine: EJS (Embedded JavaScript templating)
+- Authentication: Express-session for session management
+- Password Hashing: bcrypt
+- Excel Export: ExcelJS
 
-## Запуск проекта
-Для запуска проекта выполните следующие шаги:
+## Project Structure
+- `/views`: Contains EJS templates for views
+- `/public`: Stores static files (CSS, client-side JavaScript)
+- `/db`: Houses the SQLite database file
+- `app.js`: Main server file with Express configuration and route handlers
+- `package.json`: Node.js dependencies and script commands
 
-1. Установка зависимостей:
-npm install
+## Installation and Setup
+1. Clone the repository:
+   ```
+   git clone [repository-url]
+   cd [repository-name]
+   ```
+2. Install dependencies:
+   ```
+   npm install
+   ```
+3. Start the server:
+   ```
+   node app.js
+   ```
+4. Access the application at `http://localhost:4000`
 
-2. Запуск сервера:
-node app.js
+## Main Pages and Functionality
 
-Приложение будет доступно по адресу http://localhost:9999.
+### Home Page
+- Options for equipment issuance and admin panel access
 
-## Основные страницы и функционал
-### Главная страница:
-Содержит кнопки "Выдача оборудования" и "Панель администратора".
+### Equipment Issuance Page
+- Form for recording equipment issuance details
+- Automatic generation of issuance numbers
 
-### Страница Выдача оборудования:
-Форма для заполнения данных о выдаче оборудования:
-- Наименование оборудования
-- ФИО получившего оборудование.
-- ФИО выдавшего оборудование.
-- Номер выдачи (генерируется автоматически).
-- Выбор типа оборудования из предложенного списка.
-- Дополнительные сведения (например, помещение или номер оборудования) в свободной форме.
+### Equipment Return Page
+- User-friendly interface for employees to mark equipment as returned
+- Displays active issuances for the selected user
 
-### Страница Возврата оборудования:
-Форма для заполнения данных о выдаче оборудования:
-- ФИО получившего оборудование.
-При выборе своего ФИО пользователь видит свои заявки или их отсуствие. При отображении заявок пользователь может отметить в системе, что он вернул оборудование. Далее его переадресует на гравную страницу.
+### Admin Panel
+- Comprehensive view of all equipment issuances
+- Search functionality across all fields
+- Option to confirm equipment returns
+- Excel export of all records
+- Access to user management and equipment type management
 
-### Панель администратора:
-Страница доступна только администратору после аутентификации:
-- Название страницы и кнопка "Выйти".
-- Кнопка "Создать нового администратора".
-- Кнопка "Изменить пароль".
-- Кнопка "Справочник типов оборудования".
-- Поле для поиска по таблице оборудования.
-- Таблица со столбцами: Получил, Выдал, Дата выдачи, Тип оборудования, Наименование оборудования, Номер выдачи, Дополнительные сведения, Дата возврата, Возврат подтвердил.
-- Кнопка "Подтвердить возврат" для отметки возврата и записи данных.
+### Equipment Type Management
+- Add, edit, or remove equipment types
 
-## Бизнес-логика
-### Выдача оборудования:
-- Автоматическое присвоение номера выдачи в формате АЛYY-NNNN.
-- Запись данных о выдаче в базу данных.
+### User Management
+- Add new admin users
+- Change admin passwords
 
-### Справочник типов оборудования:
-Данная страница позволяет управлять типами оборудования. Страница доступна только администраторам.
+## Business Logic
 
-### Панель администратора:
-- Просмотр всех выданных единиц оборудования.
-- Поиск по таблице по различным параметрам.
-- Подтверждение возврата оборудования с записью информации о возврате.
+### Equipment Issuance
+- Automatic assignment of issuance numbers in the format IT[YY]-[NNNN]
+- Recording of issuance details in the database
+
+### Equipment Return
+- Two-step return process: user marks return, admin confirms
+- Timestamp recording for return actions
+
+### Admin Functions
+- View and search all equipment records
+- Confirm equipment returns
+- Manage equipment types
+- Manage admin users
+
+## Security
+- Password hashing using bcrypt
+- Session-based authentication for admin access
+
+## Future Enhancements
+- Implement more advanced search techniques for large datasets
+- Add pagination for equipment records
+- Implement user roles with varying levels of access
+- Add email notifications for overdue equipment
+
+## Contributing
+Contributions to improve the system are welcome. Please follow these steps:
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature-branch`)
+3. Make your changes and commit (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin feature-branch`)
+5. Create a new Pull Request
+
+## License
+[Specify your license here]
