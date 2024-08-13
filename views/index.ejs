@@ -5,6 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/styles.css">
     <title>Главная страница</title>
+    <style>
+        .button-with-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 20px 22px;
+            font-size: 20px;
+            border: none;
+            background-color: #005DB9;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+        .button-with-icon .icon {
+            width: 42px;
+            height: 42px;
+            margin-bottom: 10px;
+        }
+
+        .button-with-icon span {
+            color: white;
+        }
+
+        .button-with-icon:hover {
+            background-color: #007bff;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
 </head>
 <body>
     <div class="container" style="text-align: center; max-width: 1000px; width: 90%;">
@@ -12,16 +49,29 @@
         <h1>Выдача и возврат оборудования</h1>
         <div style="display: flex; gap: 0.5vw; width: 100%;">
             <a href="/issue" style="flex: 1;">
-                <button style="width: 100%; padding: 20px 22px; font-size: 18px;">Выдача оборудования</button>
+                <button class="button-with-icon">
+                    <!-- Иконка коробки для выдачи оборудования -->
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M12.4856 1.12584C12.1836 0.958052 11.8164 0.958052 11.5144 1.12584L2.51436 6.12584L2.5073 6.13784L2.49287 6.13802C2.18749 6.3177 2 6.64568 2 7V16.9999C2 17.3631 2.19689 17.6977 2.51436 17.874L11.5022 22.8673C11.8059 23.0416 12.1791 23.0445 12.4856 22.8742L21.4856 17.8742C21.8031 17.6978 22 17.3632 22 17V7C22 6.64568 21.8125 6.31781 21.5071 6.13813C21.4996 6.13372 21.4921 6.12942 21.4845 6.12522L12.4856 1.12584ZM5.05923 6.99995L12.0001 10.856L14.4855 9.47519L7.74296 5.50898L5.05923 6.99995ZM16.5142 8.34816L18.9409 7L12 3.14396L9.77162 4.38195L16.5142 8.34816ZM4 16.4115V8.69951L11 12.5884V20.3004L4 16.4115ZM13 20.3005V12.5884L20 8.69951V16.4116L13 20.3005Z" fill="white"/>
+                    </svg>
+                    Получить оборудование
+                </button>
             </a>
             <a href="/return" style="flex: 1;">
-                <button style="width: 100%; padding: 20px 22px; font-size: 18px;">Возврат оборудования</button>
+                <button class="button-with-icon">
+                    <!-- Иконка для возврата оборудования (стрелка в кружке) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 8v8m0 0l4-4m-4 4l-4-4"></path>
+                    </svg>
+                    Вернуть оборудование
+                </button>
             </a>
         </div>
         <div style="margin-top: 10px;">
-        <a href="/admin" style="flex: 1; margin-top: 20px;">
-            <button class="admin-button">Панель администратора</button>
-        </a>
+            <a href="/admin" style="flex: 1; margin-top: 20px;">
+                <button class="admin-button">Панель администратора</button>
+            </a>
         </div>
     </div>
 </body>
