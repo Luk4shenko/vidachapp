@@ -312,7 +312,7 @@ app.post('/add-admin', checkAuth, (req, res) => {
 });
 
 app.post('/issue', (req, res) => {
-    const { fullName, issuedBy, journalType, medicineType, additionalInfo } = req.body;
+    const { fullName, issuedBy, journalType, additionalInfo } = req.body;
 
     // Generate the next journal number
     generateNextJournalNumber((err, journalNumber) => {
@@ -320,9 +320,9 @@ app.post('/issue', (req, res) => {
             res.status(500).send('Error generating journal number');
         } else {
             // Insert data into the 'issues' table
-            db.run(`INSERT INTO issues (fullName, issuedBy, journalType, medicineType, additionalInfo, journalNumber, issueDate, returnConfirmed)
-                    VALUES (?, ?, ?, ?, ?, ?, datetime('now','localtime'), 0)`,
-                    [fullName, issuedBy, journalType, medicineType, additionalInfo, journalNumber],
+            db.run(`INSERT INTO issues (fullName, issuedBy, journalType, additionalInfo, journalNumber, issueDate, returnConfirmed)
+                    VALUES (?, ?, ?, ?, ?, datetime('now','localtime'), 0)`,
+                    [fullName, issuedBy, journalType, additionalInfo, journalNumber],
                     (err) => {
                         if (err) {
                             console.error('Error inserting issue:', err.message);
@@ -389,7 +389,7 @@ app.get('/search', checkAuth, (req, res) => {
     const searchQuery = req.query.search;
     const query = `
         SELECT * FROM issues
-        WHERE fullName LIKE ? OR issuedBy LIKE ? OR journalType LIKE ? OR medicineType LIKE ? OR journalNumber LIKE ? OR additionalInfo LIKE ? OR returnDate LIKE ? OR returnConfirmedBy LIKE ?
+        WHERE fullName LIKE ? OR issuedBy LIKE ? OR journalType LIKE ? OR journalNumber LIKE ? OR additionalInfo LIKE ? OR returnDate LIKE ? OR returnConfirmedBy LIKE ?
     `;
     const params = [`%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`];
 
