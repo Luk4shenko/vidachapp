@@ -411,7 +411,7 @@ app.get('/search', checkAuth, (req, res) => {
         SELECT * FROM issues
         WHERE fullName LIKE ? OR issuedBy LIKE ? OR journalType LIKE ? OR journalNumber LIKE ? OR additionalInfo LIKE ? OR returnDate LIKE ? OR returnConfirmedBy LIKE ?
     `;
-    const params = [`%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`];
+    const params = [ `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`];
 
     db.all(query, params, (err, rows) => {
         if (err) {
