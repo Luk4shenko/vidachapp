@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Deletion</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        button { margin: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Confirm Deletion</h1>
+        <p>Are you sure you want to delete the administrator <strong><%= username %></strong>?</p>
+        <form id="deleteForm" action="/delete-admin/<%= username %>" method="POST">
+            <button type="submit">Yes, delete</button>
+        </form>
+        <a href="/">Cancel</a>
+    </div>
+
+    <script>
+        document.getElementById('deleteForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Предотвратить отправку формы немедленно
+
+            // Отправка формы
+            fetch(this.action, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(new FormData(this)).toString()
+            }).then(response => {
+                if (response.ok) {
+                    return response.json(); // Обработайте JSON ответ
+                } else {
+                    throw new Error('Network response was not ok.');
+                }
+            }).then(data => {
+                // Показываем сообщение об успешном удалении
+                alert(data.message);
+                // Через 2 секунды перенаправление на /admin
+                window.location.href = '/admin';
+            }).catch(error => {
+                console.error('Error:', error);
+                alert('Error deleting admin. Please try again.');
+            });
+        });
+    </script>
+</body>
+</html>

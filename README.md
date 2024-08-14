@@ -106,5 +106,32 @@ Contributions to improve the system are welcome. Please follow these steps:
 4. Push to the branch (`git push origin feature-branch`)
 5. Create a new Pull Request
 
-## License
-[Specify your license here]
+### Managing Admin Users
+
+This section describes how to manage admin users, including how to remove an admin and update an admin's password.
+
+#### Removing an Admin
+
+To remove an admin user, follow these steps:
+
+1. **Access the Admin Panel**: Log in with a user that has the 'god' role.
+2. **Navigate to Delete Admin**:
+   - Go to the URL `/confirm-delete/:username`, replacing `:username` with the username of the admin you want to delete.
+   - The page will show a confirmation prompt.
+3. **Confirm Deletion**:
+   - Confirm the deletion to permanently remove the admin from the database.
+
+   > **Note**: Only users with the 'god' role can delete other admins. This action is irreversible, so proceed with caution.
+
+#### Updating an Admin's Password
+
+To update the password for an admin user, follow these steps:
+
+1. **Access the Password Reset Form**:
+   - Log in with a user that has the 'god' role.
+   - Navigate to the URL `/reset-password`.
+2. **Submit the New Password**:
+   - Fill out the form with the username of the admin whose password you wish to update and the new password.
+   - Submit the form, and the password will be securely hashed and updated in the database.
+
+   > **Note**: This action requires 'god' role permissions. Ensure that the new password meets security requirements.

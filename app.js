@@ -447,6 +447,45 @@ app.get('/getAdminOptions', (req, res) => {
     });
 });
 
+// Маршрут для отображения страницы подтверждения удаления
+app.get('/confirm-delete/:username', checkGodRole, (req, res) => {
+    const usernameToDelete = req.params.username;
+
+    db.get('SELECT * FROM users WHERE username = ? AND role = "admin"', [usernameToDelete], (err, user) => {
+        if (err) {
+            console.error('Database query error:', err.message);
+            res.status(500).send('Database query error');
+        } else if (!user) {
+            res.status(404).send('Admin not found');
+        } else {
+            res.render('confirm-delete', { username: usernameToDelete });
+        }
+    });
+});
+
+// Маршрут для удаления администраторов
+app.post('/delete-admin/:username', checkGodRole, (req, res) => {
+    const usernameToDelete = req.params.username;
+
+    db.get('SELECT * FROM users WHERE username = ? AND role = "admin"', [usernameToDelete], (err, user) => {
+        if (err) {
+            console.error('Database query error:', err.message);
+            res.status(500).send('Database query error');
+        } else if (!user) {
+            res.status(404).send('Admin not found');
+        } else {
+            db.run('DELETE FROM users WHERE username = ?', [usernameToDelete], (err) => {
+                if (err) {
+                    console.error('Database delete error:', err.message);
+                    res.status(500).send('Database delete error');
+                } else {
+                    res.json({ message: `Admin ${usernameToDelete} deleted successfully` });
+                }
+            });
+        }
+    });
+});
+
 app.get('/reset', checkAuth, (req, res) => {
     db.all('SELECT * FROM issues', (err, rows) => {
         if (err) {
