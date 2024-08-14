@@ -1,137 +1,136 @@
-# Equipment Management System
 
-## Description
-This repository contains a web application for managing equipment issuance and returns using a SQLite database. The system provides functionality for equipment management, user and admin administration, and data search capabilities.
+# Система Управления Оборудованием
 
-## Key Features
-- Equipment issuance and return tracking
-- Automatic generation of unique issuance numbers
-- User-friendly interface for equipment returns
-- Admin panel for comprehensive management
-- Search functionality across all records
-- Excel export of all equipment records
-- User and admin management
-- Equipment type management
+## Описание
+Этот репозиторий содержит веб-приложение для управления выдачей и возвратом оборудования с использованием базы данных SQLite. Система предоставляет функционал для управления оборудованием, администрирования пользователей и админов, а также функции поиска данных.
 
-## Technologies Used
-- Backend: Node.js with Express.js
+## Основные функции
+- Отслеживание выдачи и возврата оборудования
+- Автоматическая генерация уникальных номеров выдачи
+- Удобный интерфейс для возврата оборудования
+- Админ-панель для комплексного управления
+- Поиск по всем записям
+- Экспорт данных по оборудованию в Excel
+- Управление пользователями и администраторами
+- Управление типами оборудования
+
+## Используемые технологии
+- Backend: Node.js с использованием Express.js
 - Frontend: HTML, CSS, JavaScript
-- Database: SQLite
-- View Engine: EJS (Embedded JavaScript templating)
-- Authentication: Express-session for session management
-- Password Hashing: bcrypt
-- Excel Export: ExcelJS
+- База данных: SQLite
+- Шаблонизатор: EJS (Embedded JavaScript templating)
+- Аутентификация: Express-session для управления сессиями
+- Хеширование паролей: bcrypt
+- Экспорт в Excel: ExcelJS
 
-## Project Structure
-- `/views`: Contains EJS templates for views
-- `/public`: Stores static files (CSS, client-side JavaScript)
-- `/db`: Houses the SQLite database file
-- `app.js`: Main server file with Express configuration and route handlers
-- `package.json`: Node.js dependencies and script commands
+## Структура проекта
+- `/views`: содержит EJS-шаблоны для отображения страниц
+- `/public`: хранит статические файлы (CSS, клиентский JavaScript)
+- `/db`: содержит файл базы данных SQLite
+- `app.js`: основной серверный файл с конфигурацией Express и маршрутами
+- `package.json`: зависимости Node.js и команды для запуска
 
-## Installation and Setup
-1. Clone the repository:
+## Установка и настройка
+1. Клонируйте репозиторий:
    ```
-   git clone [repository-url]
-   cd [repository-name]
+   git clone [URL репозитория]
+   cd [имя репозитория]
    ```
-2. Install dependencies:
+2. Установите зависимости:
    ```
    npm install
    ```
-3. Start the server:
+3. Запустите сервер:
    ```
    node app.js
    ```
-4. Access the application at `http://localhost:4000`
+4. Доступ к приложению по адресу `http://localhost:4000`
 
-## Main Pages and Functionality
+## Основные страницы и функциональность
 
-### Home Page
-- Options for equipment issuance and admin panel access
+### Главная страница
+- Опции для выдачи оборудования и доступа к админ-панели
 
-### Equipment Issuance Page
-- Form for recording equipment issuance details
-- Automatic generation of issuance numbers
+### Страница выдачи оборудования
+- Форма для записи данных о выдаче оборудования
+- Автоматическая генерация номеров выдачи
 
-### Equipment Return Page
-- User-friendly interface for employees to mark equipment as returned
-- Displays active issuances for the selected user
+### Страница возврата оборудования
+- Удобный интерфейс для сотрудников для отметки возврата оборудования
+- Отображение активных выдач для выбранного пользователя
 
-### Admin Panel
-- Comprehensive view of all equipment issuances
-- Search functionality across all fields
-- Option to confirm equipment returns
-- Excel export of all records
-- Access to user management and equipment type management
+### Админ-панель
+- Полный обзор всех выдач оборудования
+- Поиск по всем полям
+- Подтверждение возврата оборудования
+- Экспорт данных в Excel
+- Доступ к управлению пользователями и типами оборудования
 
-### Equipment Type Management
-- Add, edit, or remove equipment types
+### Управление типами оборудования
+- Добавление, редактирование или удаление типов оборудования
 
-### User Management
-- Add new admin users
-- Change admin passwords
+### Управление пользователями
+- Добавление новых администраторов
+- Изменение паролей администраторов
 
-## Business Logic
+## Бизнес-логика
 
-### Equipment Issuance
-- Automatic assignment of issuance numbers in the format IT[YY]-[NNNN]
-- Recording of issuance details in the database
+### Выдача оборудования
+- Автоматическое присвоение номеров выдачи в формате ИТ[YY]-[NNNN]
+- Запись данных о выдаче в базу данных
 
-### Equipment Return
-- Two-step return process: user marks return, admin confirms
-- Timestamp recording for return actions
+### Возврат оборудования
+- Двухэтапный процесс возврата: пользователь отмечает возврат, администратор подтверждает
+- Запись временной метки для действий по возврату
 
-### Admin Functions
-- View and search all equipment records
-- Confirm equipment returns
-- Manage equipment types
-- Manage admin users
+### Администраторские функции
+- Просмотр и поиск всех записей по оборудованию
+- Подтверждение возврата оборудования
+- Управление типами оборудования
+- Управление администраторами
 
-## Security
-- Password hashing using bcrypt
-- Session-based authentication for admin access
+## Безопасность
+- Хеширование паролей с использованием bcrypt
+- Аутентификация на основе сессий для доступа к админ-панели
 
-## Future Enhancements
-- Implement more advanced search techniques for large datasets
-- Add pagination for equipment records
-- Implement user roles with varying levels of access
-- Add email notifications for overdue equipment
+## Возможные улучшения
+- Реализация более продвинутых методов поиска для больших наборов данных
+- Добавление пагинации для записей по оборудованию
+- Реализация пользовательских ролей с разными уровнями доступа
+- Добавление уведомлений по электронной почте для просроченного оборудования
 
-## Contributing
-Contributions to improve the system are welcome. Please follow these steps:
-1. Fork the repository
-2. Create a new branch (`git checkout -b feature-branch`)
-3. Make your changes and commit (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin feature-branch`)
-5. Create a new Pull Request
+## Участие в проекте
+Внесение улучшений в систему приветствуется. Пожалуйста, следуйте этим шагам:
+1. Форкните репозиторий
+2. Создайте новую ветку (`git checkout -b feature-branch`)
+3. Внесите свои изменения и зафиксируйте их (`git commit -am 'Add some feature'`)
+4. Отправьте изменения в свою ветку (`git push origin feature-branch`)
+5. Создайте новый Pull Request
 
-### Managing Admin Users
+## Управление администраторами
 
-This section describes how to manage admin users, including how to remove an admin and update an admin's password.
+### Удаление администратора
 
-#### Removing an Admin
+Для удаления администратора выполните следующие шаги:
 
-To remove an admin user, follow these steps:
+1. **Доступ к админ-панели**: Войдите под пользователем с ролью "god".
+2. **Навигация к удалению администратора**:
+   - Перейдите по URL `/confirm-delete/:username`, заменив `:username` на имя пользователя администратора, которого хотите удалить.
+   - На странице появится запрос на подтверждение.
+3. **Подтверждение удаления**:
+   - Подтвердите удаление, чтобы навсегда удалить администратора из базы данных.
 
-1. **Access the Admin Panel**: Log in with a user that has the 'god' role.
-2. **Navigate to Delete Admin**:
-   - Go to the URL `/confirm-delete/:username`, replacing `:username` with the username of the admin you want to delete.
-   - The page will show a confirmation prompt.
-3. **Confirm Deletion**:
-   - Confirm the deletion to permanently remove the admin from the database.
+   > **Примечание**: Только пользователи с ролью "god" могут удалять других администраторов. Это действие необратимо, поэтому действуйте осторожно.
 
-   > **Note**: Only users with the 'god' role can delete other admins. This action is irreversible, so proceed with caution.
+### Обновление пароля администратора
 
-#### Updating an Admin's Password
+Для обновления пароля администратора выполните следующие шаги:
 
-To update the password for an admin user, follow these steps:
+1. **Доступ к форме сброса пароля**:
+   - Войдите под пользователем с ролью "god".
+   - Перейдите по URL `/reset-password`.
+2. **Отправка нового пароля**:
+   - Заполните форму, указав имя пользователя администратора, для которого вы хотите обновить пароль, и новый пароль.
+   - Отправьте форму, и пароль будет безопасно хеширован и обновлен в базе данных.
 
-1. **Access the Password Reset Form**:
-   - Log in with a user that has the 'god' role.
-   - Navigate to the URL `/reset-password`.
-2. **Submit the New Password**:
-   - Fill out the form with the username of the admin whose password you wish to update and the new password.
-   - Submit the form, and the password will be securely hashed and updated in the database.
-
-   > **Note**: This action requires 'god' role permissions. Ensure that the new password meets security requirements.
+   > **Примечание**: Это действие требует прав "god". Убедитесь, что новый пароль соответствует требованиям безопасности.
