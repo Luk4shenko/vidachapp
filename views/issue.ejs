@@ -15,9 +15,12 @@
 
             <label for="fullName" style="margin-top: 0px;">ФИО:</label>
             <input type="text" id="fullName" name="fullName" required oninput="searchEmployee('fullName', this.value)" autocomplete="off" style="margin-bottom: 0px;"><br><br>
-
+            
             <label for="issuedBy" style="margin-top: 0px;">Выдал:</label>
-            <input type="text" id="issuedBy" name="issuedBy" required oninput="searchEmployee('issuedBy', this.value)" autocomplete="off" style="margin-bottom: 0px;"><br><br>
+            <select id="issuedBy" name="issuedBy" style="margin-bottom: 0px;" required>
+                <option value="" disabled selected>Выберите администратора</option>
+                <!-- Опции будут добавлены динамически -->
+            </select><br><br>
 
             <label for="journalType" style="margin-top: 0px;">Тип оборудования:</label>
             <select id="journalType" name="journalType" style="margin-bottom: 0px;" required>

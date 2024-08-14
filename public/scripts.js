@@ -18,19 +18,22 @@ window.onload = function() {
         })
         .catch(error => console.error('Error fetching journal types:', error));
 
-    fetch('/getMedicineTypes')
+    fetch('/getAdminOptions')
         .then(response => response.json())
         .then(data => {
-            const medicineTypesList = document.getElementById('medicineTypesList');
-            if (medicineTypesList) {
-                data.forEach(type => {
+            const AdminSelect = document.getElementById('issuedBy');
+            if (AdminSelect) {
+                AdminSelect.innerHTML = '<option value="" disabled selected>Выберите администратора</option>';
+                data.forEach(admin => {
                     const option = document.createElement('option');
-                    option.value = type.name;
-                    medicineTypesList.appendChild(option);
+                    option.value = admin.fullName;
+                    option.textContent = admin.fullName;
+                    AdminSelect.appendChild(option);
                 });
             }
         })
-        .catch(error => console.error('Error fetching medicine types:', error));
+        .catch(error => console.error('Error fetching options of admins:', error));
+
 
     fetch('/predictNextJournalNumber')
         .then(response => response.text())

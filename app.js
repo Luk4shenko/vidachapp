@@ -435,6 +435,18 @@ app.get('/getJournalTypes', (req, res) => {
     });
 });
 
+// Маршрут для получения опций администраторов
+app.get('/getAdminOptions', (req, res) => {
+    db.all('SELECT fullName FROM users WHERE role = "admin"', (err, rows) => {
+        if (err) {
+            console.error('Database query error:', err.message);
+            res.status(500).send('Database query error');
+            return;
+        }
+        res.json(rows);
+    });
+});
+
 app.get('/reset', checkAuth, (req, res) => {
     db.all('SELECT * FROM issues', (err, rows) => {
         if (err) {
