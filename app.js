@@ -210,12 +210,7 @@ app.get('/issue', (req, res) => {
 app.get('/admin', checkAuth, (req, res) => {
     const query = `
         SELECT * FROM issues 
-        WHERE returnConfirmed IN (0, 1)
-        UNION ALL
-        SELECT * FROM issues 
-        WHERE returnConfirmed = 2 
-        ORDER BY issueDate DESC 
-        LIMIT 50
+        WHERE returnConfirmed IN (0, 1);
     `;
 
     db.all(query, [], (err, rows) => {

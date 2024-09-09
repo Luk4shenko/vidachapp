@@ -40,50 +40,53 @@
             <button type="submit">Сбросить</button>
         </form>
     </form>
-    <table id="journalTable">
-        <thead>
-            <tr>
-                <th>Получил</th>
-                <th>Выдал</th>
-                <th>Дата выдачи</th>
-                <th>Тип оборудоания</th>
-                <th>Номер заявки</th>
-                <th>Комментарий</th>
-                <th>Дата возврата</th>
-                <th>Дата подтверждения</th>
-                <th>Возврат подтвердил</th>
-                <th>Действия</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% issues.forEach(issue => { %>
+    <div class="table-container">
+        <table id="journalTable">
+            <thead>
                 <tr>
-                    <td><%= issue.fullName %></td>
-                    <td><%= issue.issuedBy %></td>
-                    <td><%= issue.issueDate %></td>
-                    <td><%= issue.journalType %></td>
-                    <td><%= issue.journalNumber %></td>
-                    <td><%= issue.additionalInfo %></td>
-                    <td><%= issue.userDate || '-' %></td>
-                    <td><%= issue.returnDate || '-' %></td>
-                    <td><%= issue.returnConfirmedBy || '-' %></td>
-                    <td>
-                        <% if (issue.returnConfirmed === 1) { %>
-                            <form action="/confirmReturn/<%= issue.id %>" method="POST">
-                                <button type="submit">Подтвердить возврат</button>
-                            </form>
-                        <% } else if (issue.returnConfirmed === 2) { %>
-                            Возвращено
-                        <% } else { %>
-                            <form action="/confirmReturn/<%= issue.id %>" method="POST">
-                                <button type="submit">Подтвердить возврат за сотрудника</button>
-                            </form>
-                        <% } %>
-                    </td>                    
+                    <th>Получил</th>
+                    <th>Выдал</th>
+                    <th>Дата выдачи</th>
+                    <th>Тип оборудоания</th>
+                    <th>Номер заявки</th>
+                    <th>Комментарий</th>
+                    <th>Дата возврата</th>
+                    <th>Дата подтверждения</th>
+                    <th>Возврат подтвердил</th>
+                    <th>Действия</th>
                 </tr>
-            <% }); %>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <% issues.forEach(issue => { %>
+                    <tr>
+                        <td><%= issue.fullName %></td>
+                        <td><%= issue.issuedBy %></td>
+                        <td><%= issue.issueDate %></td>
+                        <td><%= issue.journalType %></td>
+                        <td><%= issue.journalNumber %></td>
+                        <td><%= issue.additionalInfo %></td>
+                        <td><%= issue.userDate || '-' %></td>
+                        <td><%= issue.returnDate || '-' %></td>
+                        <td><%= issue.returnConfirmedBy || '-' %></td>  
+                        <td>
+                            <% if (issue.returnConfirmed === 1) { %>
+                                <form action="/confirmReturn/<%= issue.id %>" method="POST">
+                                    <button type="submit" class="btn-confirm-return">Подтвердить возврат</button>
+                                </form>
+                            <% } else if (issue.returnConfirmed === 2) { %>
+                                Возвращено
+                            <% } else { %>
+                                <form action="/confirmReturn/<%= issue.id %>" method="POST">
+                                    <button type="submit" class="btn-confirm-employee">Подтвердить за сотрудника</button>
+                                </form>
+                            <% } %>
+                        </td>
+                                                        
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
 </div>
 </body>
 <script>

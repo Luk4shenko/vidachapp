@@ -149,6 +149,42 @@ td button:hover {
     background-color: #b30047;
 }
 
+/* Стили для кнопок внутри таблицы */
+td button {
+    font-size: 14px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Стили для кнопки "Подтвердить возврат" */
+.btn-confirm-return {
+    background-color: #D60058;
+    color: white;
+}
+
+.btn-confirm-return:hover {
+    background-color: #b30047;
+}
+
+/* Стили для кнопки "Подтвердить за сотрудника" */
+.btn-confirm-employee {
+    background-color: #005DB9;
+    color: white;
+}
+
+.btn-confirm-employee:hover {
+    background-color: #004a8c;
+}
+
+/* Стили для адаптивной таблицы */
+.table-container {
+    width: 97%;
+    overflow-x: auto;
+}
+
 /* Стили для списка подсказок */
 .list-group {
     position: absolute;

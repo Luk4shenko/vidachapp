@@ -37,25 +37,37 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
+
+        .horizontal-container {
+            width: 95%;
+            display: flex;
+            align-items: center; /* Выравнивание по центру вертикально */
+            gap: 20px; /* Расстояние между элементами */
+            margin-bottom: 20px;
+        }
+
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Возврат оборудования</h1>
-        <div class="button-container" style="margin-bottom: 20px;">
-            <button type="button" onclick="window.location.href='/'">На Главную</button>
-        </div>   
-        <!-- Поисковая форма -->
-        <form class="search-form">
-            <div class="form-group position-relative">
-                <label for="searchTerm">Поиск:</label>
-                <input type="text" id="searchTerm" class="form-control" placeholder="Введите ФИО" autocomplete="off" list="suggestionsList">
-                <datalist id="suggestionsList"></datalist>
+
+        <div class="horizontal-container">
+            <div class="button-container" style="margin-bottom: 20px;">
+                <button type="button" onclick="window.location.href='/'">Назад</button>
             </div>
-        </form>
+            <!-- Поисковая форма -->
+            <form class="search-form" style="width: 95%;">
+                <div class="form-group position-relative">
+                    <label for="searchTerm">Поиск:</label>
+                    <input type="text" id="searchTerm" class="form-control" placeholder="Введите ФИО" autocomplete="off" list="suggestionsList">
+                    <datalist id="suggestionsList"></datalist>
+                </div>
+            </form>
+        </div>
 
         <!-- Сообщение об отсутствии заявок -->
-        <h2 id="no-issues-message">Заявок нет</h2>
+        <h2 id="no-issues-message">Активных заявок нет</h2>
 
         <!-- Таблица с журналами пользователя -->
         <div class="return-panel">
@@ -63,8 +75,8 @@
                 <table id="issuesTable" class="table">
                     <thead>
                         <tr>
-                            <th>Тип журнала</th>
-                            <th>Номер журнала</th>
+                            <th>Тип оборудования</th>
+                            <th>Номер заявки</th>
                             <th>Выдан</th>
                             <th>Дата выдачи</th>
                             <th>Доп. информация</th>
